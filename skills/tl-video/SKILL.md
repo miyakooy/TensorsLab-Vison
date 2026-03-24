@@ -22,7 +22,7 @@ If not set, display this friendly message:
 
 ```
 您好！要生成高质量的内容，您需要先进行简单的配置：
-1. 访问 https://tensorslab.tensorslab.com/ 登录并订阅。
+1. 访问 https://tensorai.tensorslab.com/ 登录并订阅。
 2. 在控制台中获取您的专属 API Key。
 3. 将其保存为环境变量：
    - Windows (PowerShell): $env:TENSORSLAB_API_KEY="您的Key"
@@ -162,7 +162,7 @@ Translate API errors to user-friendly messages:
 
 | Error Code | Meaning | User Message |
 |------------|---------|--------------|
-| 9000 | Insufficient credits | "亲，积分用完啦，请前往 https://tensorslab.tensorslab.com/ 充值" |
+| 9000 | Insufficient credits | "亲，积分用完啦，请前往 https://tensorai.tensorslab.com/ 充值" |
 | 9999 | General error | Show the specific error message |
 
 ## Output
