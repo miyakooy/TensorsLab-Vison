@@ -4,8 +4,8 @@
     "name": "TensorsLab"
   },
   "metadata": {
-    "description": "Powerful Agent Skills for image and video generation tasks using TensorsLab. Support Text-to-Image, Image-to-Image, Text-to-Video and Image-to-Video via natural language prompt.",
-    "version": "1.0.0"
+    "description": "TensorsLab image and video API skills, plus Miaodashi Visual Workshop workflows for ecommerce and campaign creative production.",
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -19,6 +19,12 @@
       "source": "./skills/tl-video",
       "skills": "./",
       "description": "TensorsLab Video Generation Skill. Effortlessly create stunning videos via Text-to-Video or animate images via Image-to-Video. Includes automatic scene property deduction, real-time terminal progress tracking, and seamless local downloads."
+    },
+    {
+      "name": "miaodashi-workshop",
+      "source": "./skills/miaodashi-workshop",
+      "skills": "./",
+      "description": "Miaodashi Visual Workshop. Create reviewable ecommerce image/video plans, preflight exact TensorsLab client commands without calling the API, approve locally, and record QA with selective retries."
     }
   ]
 }

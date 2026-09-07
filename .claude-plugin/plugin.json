@@ -1,12 +1,12 @@
 {
   "name": "tensorslab-skills",
-  "description": "Powerful Agent Skills for image and video generation tasks using TensorsLab. Support Text-to-Image, Image-to-Image, Text-to-Video and Image-to-Video via natural language prompt.",
-  "version": "1.0.0",
+  "description": "TensorsLab image and video API skills, plus Miaodashi Visual Workshop workflows for ecommerce and campaign creative production.",
+  "version": "1.2.0",
   "author": {
     "name": "TensorsLab"
   },
-  "homepage": "https://github.com/tensorslab/skills",
-  "repository": "https://github.com/tensorslab/skills",
+  "homepage": "https://miaodashi.com",
+  "repository": "https://github.com/miyakooy/TensorsLab-Vison",
   "license": "Apache-2.0",
   "keywords": [
     "tensorslab",
@@ -16,6 +16,9 @@
     "image-to-image",
     "text-to-video",
     "image-to-video",
-    "ai"
+    "ai",
+    "miaodashi",
+    "ecommerce",
+    "creative-workflow"
   ]
 }

@@ -1,5 +1,6 @@
 api-reference
 *.pyc
+__pycache__/
 *.skill
 *.jpg
 *.png
@@ -7,3 +8,5 @@ api-reference
 *.webm
 *.zip
 .claude/settings.local.json
+tensorslab_output/
+.miaodashi_output/
