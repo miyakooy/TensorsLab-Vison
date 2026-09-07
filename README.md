@@ -1,5 +1,9 @@
 # TensorsLab Vision Skills
 
+<p align="center">
+  <img src="docs/assets/api-scenes.svg" alt="TensorsLab Vision API scenes and Miaodashi Workshop" width="100%" />
+</p>
+
 TensorsLab Vision Skills provide reusable image and video API capabilities for coding agents. The package also includes **Miaodashi Visual Workshop**, a first-party workflow that turns product or campaign assets into a confirmed visual-production plan before calling the generation APIs.
 
 - **Developers** use `tl-image` and `tl-video` as direct TensorsLab API capabilities.
@@ -10,6 +14,16 @@ Miaodashi is the no-code visual-production product built on the same workflow id
 ## Visual Lab
 
 The repository includes a responsive product interface for GitHub Pages. After enabling the included Pages workflow, it is available at [TensorsLab Vision Lab](https://miyakooy.github.io/TensorsLab-Vison/). It presents the API scenes, Miaodashi workflows, installation path, and product handoff without replacing the developer documentation below.
+
+> **GitHub Pages setup:** in the repository settings, open **Pages → Build and deployment → Source**, select **GitHub Actions**, then re-run the `Deploy GitHub Pages` workflow. The first run cannot pass `Configure Pages` until this one-time setting exists.
+
+## At a glance
+
+<p align="center">
+  <img src="docs/assets/workshop-flow.svg" alt="Miaodashi Workshop confirmed production flow" width="100%" />
+</p>
+
+The repository has two layers: the existing `tl-image` and `tl-video` skills expose the TensorsLab API; `miaodashi-workshop` adds a confirmation-first production layer for ecommerce and campaign teams. It records decisions before generation, then reuses the existing clients instead of introducing another image or video API.
 
 ## How do Skills work?
 
@@ -74,6 +88,10 @@ Once installed, mention the task directly:
 - “Use Miaodashi Workshop to turn these product photos into listing images and a short vertical product video.”
 
 ## Miaodashi Visual Workshop
+
+<p align="center">
+  <img src="docs/assets/quality-gates.svg" alt="Quality gates and local run artifacts" width="100%" />
+</p>
 
 The workshop follows a first-party production path: asset-role registration, product-fact lock, prompt-plan confirmation, TensorsLab generation, per-task quality review, selective retry, and delivery records. It does not replace `tl-image` or `tl-video`; it plans tasks and reuses those existing API clients after the user approves the run.
 
