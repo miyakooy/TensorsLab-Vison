@@ -101,7 +101,7 @@ API Key는 [TensorsLab Console](https://tensorai.tensorslab.com/)에서 받을 �
 
 ## 커뮤니티 작품과 사용 사례
 
-[작품 갤러리와 재현 가능한 사용 사례 목록](examples/README.md)에서 이커머스 상품 영상, 상품 비교, 상세 페이지 세트와 엔터테인먼트 인물 효과를 볼 수 있습니다. 공개된 참고 작품과 이 저장소에서 실제로 실행 가능한 워크플로를 명확히 구분합니다.
+[작품 갤러리와 재현 가능한 사용 사례 목록](examples/README.ko.md)에서 이커머스 상품 영상, 상품 비교, 상세 페이지 세트와 엔터테인먼트 인물 효과를 볼 수 있습니다. 공개된 참고 작품과 이 저장소에서 실제로 실행 가능한 워크플로를 명확히 구분합니다.
 
 ### Face swap / faceswap을 지원하나요?
 
@@ -113,6 +113,6 @@ python -m unittest discover -s tests -v
 
 - [이미지 Skill](skills/tl-image/SKILL.md)
 - [비디오 Skill](skills/tl-video/SKILL.md)
-- [커뮤니티 작품](examples/README.md) · [기여 가이드](CONTRIBUTING.md)
+- [커뮤니티 작품](examples/README.ko.md) · [기여 가이드](CONTRIBUTING.md)
 - [GEO / 검색 노출 가이드](docs/discoverability.md)
-- [GitHub Pages](https://miyakooy.github.io/TensorsLab-Vison/)
+- [GitHub Pages 한국어](https://miyakooy.github.io/TensorsLab-Vison/ko/)

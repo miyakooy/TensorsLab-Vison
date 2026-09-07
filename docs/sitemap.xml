@@ -1,9 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://miyakooy.github.io/TensorsLab-Vison/</loc>
-    <lastmod>2026-09-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://miyakooy.github.io/TensorsLab-Vison/en/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://miyakooy.github.io/TensorsLab-Vison/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://miyakooy.github.io/TensorsLab-Vison/ko/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <lastmod>2026-09-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://miyakooy.github.io/TensorsLab-Vison/en/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://miyakooy.github.io/TensorsLab-Vison/en/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://miyakooy.github.io/TensorsLab-Vison/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://miyakooy.github.io/TensorsLab-Vison/ko/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <lastmod>2026-09-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://miyakooy.github.io/TensorsLab-Vison/ja/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://miyakooy.github.io/TensorsLab-Vison/en/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://miyakooy.github.io/TensorsLab-Vison/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://miyakooy.github.io/TensorsLab-Vison/ko/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <lastmod>2026-09-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://miyakooy.github.io/TensorsLab-Vison/ko/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://miyakooy.github.io/TensorsLab-Vison/en/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://miyakooy.github.io/TensorsLab-Vison/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://miyakooy.github.io/TensorsLab-Vison/ko/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <lastmod>2026-09-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

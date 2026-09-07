@@ -9,13 +9,20 @@
     />
     <title>TensorsLab Vision · 视觉生产实验室</title>
     <link rel="canonical" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <link rel="alternate" hreflang="en" href="https://miyakooy.github.io/TensorsLab-Vison/en/" />
+    <link rel="alternate" hreflang="ja" href="https://miyakooy.github.io/TensorsLab-Vison/ja/" />
+    <link rel="alternate" hreflang="ko" href="https://miyakooy.github.io/TensorsLab-Vison/ko/" />
+    <link rel="alternate" hreflang="x-default" href="https://miyakooy.github.io/TensorsLab-Vison/" />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="TensorsLab Vision Skills" />
     <meta property="og:title" content="TensorsLab Vision Skills · 图像与视频 API 工作流" />
     <meta property="og:description" content="可执行的 TensorsLab 图像与视频 API Skill，以及先确认再生成的本地视觉生产工作流。" />
     <meta property="og:url" content="https://miyakooy.github.io/TensorsLab-Vison/" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://miaodashi.com/cap-short-video.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -26,6 +33,7 @@
         "programmingLanguage": "Python",
         "runtimePlatform": "Python 3",
         "url": "https://miyakooy.github.io/TensorsLab-Vison/",
+        "inLanguage": "zh-Hans",
         "keywords": ["TensorsLab", "AI agent skills", "Claude Code skills", "text to image", "image to video", "video generation", "ecommerce product video", "creative workflow"]
       }
     </script>
@@ -105,9 +113,14 @@
       .brand-name strong { font-family: "Instrument Serif", "Noto Serif SC", serif; font-size: 23px; font-weight: 400; }
       .brand-name span { margin-top: 5px; color: var(--ink-soft); font-family: "DM Mono", monospace; font-size: 9px; letter-spacing: 0.22em; }
 
-      .nav { display: flex; align-items: center; gap: 6px; }
+      .nav-group, .nav, .locale-nav { display: flex; align-items: center; }
+      .nav-group { gap: 12px; }
+      .nav { gap: 6px; }
       .nav a { padding: 9px 13px; color: var(--ink-soft); border-radius: 99px; font-size: 14px; transition: background 160ms ease, color 160ms ease; }
       .nav a:hover, .nav a.active { color: var(--paper); background: var(--ink); }
+      .locale-nav { gap: 4px; padding-left: 12px; border-left: 1px solid var(--line); }
+      .locale-nav a { padding: 6px; color: var(--ink-soft); font-family: "DM Mono", monospace; font-size: 10px; letter-spacing: 0.06em; }
+      .locale-nav a:hover, .locale-nav a.active { color: var(--clay-dark); }
 
       .hero {
         display: grid;
@@ -338,8 +351,11 @@
       @media (max-width: 680px) {
         .shell { padding: 0 18px; }
         .topbar { min-height: 74px; }
+        .nav-group { gap: 6px; }
         .nav a { padding: 8px 8px; font-size: 12px; }
         .nav a:last-child { display: none; }
+        .locale-nav { gap: 2px; padding-left: 6px; }
+        .locale-nav a { padding: 5px 3px; font-size: 9px; }
         .hero { padding: 72px 0 55px; }
         .hero-visual { min-height: 260px; }
         .visual-main { min-height: 260px; }
@@ -363,13 +379,21 @@
           <span class="brand-mark">⊙</span>
           <span class="brand-name"><strong>TensorsLab</strong><span>VISION</span></span>
         </a>
-        <nav class="nav" aria-label="主导航">
-          <a href="#showcase">作品</a>
-          <a href="#workflows">工作流</a>
-          <a href="#api" class="active">实验室</a>
-          <a href="#start">开始使用</a>
-          <a href="https://miaodashi.com">喵大师 ↗</a>
-        </nav>
+        <div class="nav-group">
+          <nav class="nav" aria-label="主导航">
+            <a href="#showcase">作品</a>
+            <a href="#workflows">工作流</a>
+            <a href="#api" class="active">实验室</a>
+            <a href="#start">开始使用</a>
+            <a href="https://miaodashi.com">喵大师 ↗</a>
+          </nav>
+          <nav class="locale-nav" aria-label="语言">
+            <a class="active" href="./" lang="zh-Hans">中文</a>
+            <a href="en/" lang="en">EN</a>
+            <a href="ja/" lang="ja">日本語</a>
+            <a href="ko/" lang="ko">한국어</a>
+          </nav>
+        </div>
       </header>
 
       <main id="top">

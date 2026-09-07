@@ -15,6 +15,9 @@ This is an experimental navigation file, not a ranking signal. Prefer the linked
 - [Review-first workshop](https://github.com/miyakooy/TensorsLab-Vison/blob/main/skills/miaodashi-workshop/SKILL.md)
 - [Community showcase and use-case queue](https://github.com/miyakooy/TensorsLab-Vison/blob/main/examples/README.md)
 - [Contribution guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/CONTRIBUTING.md)
+- [English showcase page](https://miyakooy.github.io/TensorsLab-Vison/en/)
+- [Japanese showcase page](https://miyakooy.github.io/TensorsLab-Vison/ja/)
+- [Korean showcase page](https://miyakooy.github.io/TensorsLab-Vison/ko/)
 - [Search and GEO notes](https://github.com/miyakooy/TensorsLab-Vison/blob/main/docs/discoverability.md)
 
 ## Capability boundary

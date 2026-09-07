@@ -1,5 +1,9 @@
 # TensorsLab Vision 作品与场景 / Showcase
 
+<p>
+  <a href="README.md">简体中文</a> · <a href="README.en.md">English</a> · <a href="README.ja.md">日本語</a> · <a href="README.ko.md">한국어</a>
+</p>
+
 这里展示可以继续沉淀为社区场景包的视觉案例。图片来自 [miaodashi.com](https://miaodashi.com) 已公开的视觉展示；它们用于说明目标交付物，不代表每个步骤都已经由本仓库自动完成。
 
 社区场景包的目标不是只展示成片，而是补齐：原始素材、约束、可复用 Prompt、模型参数、运行记录、质量门禁和已知限制。

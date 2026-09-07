@@ -15,8 +15,26 @@ READMES = [
     ROOT / "README.ko.md",
     ROOT / "CONTRIBUTING.md",
     ROOT / "examples/README.md",
+    ROOT / "examples/README.en.md",
+    ROOT / "examples/README.ja.md",
+    ROOT / "examples/README.ko.md",
     ROOT / "docs/README.md",
 ]
+
+PAGE_URLS = {
+    ROOT / "docs/index.html": "https://miyakooy.github.io/TensorsLab-Vison/",
+    ROOT / "docs/en/index.html": "https://miyakooy.github.io/TensorsLab-Vison/en/",
+    ROOT / "docs/ja/index.html": "https://miyakooy.github.io/TensorsLab-Vison/ja/",
+    ROOT / "docs/ko/index.html": "https://miyakooy.github.io/TensorsLab-Vison/ko/",
+}
+
+HREFLANGS = {
+    "zh-Hans": "https://miyakooy.github.io/TensorsLab-Vison/",
+    "en": "https://miyakooy.github.io/TensorsLab-Vison/en/",
+    "ja": "https://miyakooy.github.io/TensorsLab-Vison/ja/",
+    "ko": "https://miyakooy.github.io/TensorsLab-Vison/ko/",
+    "x-default": "https://miyakooy.github.io/TensorsLab-Vison/",
+}
 
 
 class DocumentationTests(unittest.TestCase):
@@ -66,7 +84,18 @@ class DocumentationTests(unittest.TestCase):
     def test_sitemap_is_valid_xml(self) -> None:
         root = ET.parse(ROOT / "docs/sitemap.xml").getroot()
         locations = [item.text for item in root.findall("{*}url/{*}loc")]
-        self.assertIn("https://miyakooy.github.io/TensorsLab-Vison/", locations)
+        self.assertEqual(set(locations), set(PAGE_URLS.values()))
+
+    def test_localized_pages_have_reciprocal_hreflang(self) -> None:
+        for page, canonical_url in PAGE_URLS.items():
+            html = page.read_text(encoding="utf-8")
+            self.assertIn(f'<link rel="canonical" href="{canonical_url}"', html)
+            for language, url in HREFLANGS.items():
+                self.assertIn(
+                    f'<link rel="alternate" hreflang="{language}" href="{url}"',
+                    html,
+                    page.name,
+                )
 
     def test_json_ld_is_valid(self) -> None:
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")

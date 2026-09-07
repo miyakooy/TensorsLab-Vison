@@ -8,9 +8,9 @@ This document records the repository's discoverability choices and separates est
 - Separate English, Simplified Chinese, Japanese, and Korean README URLs with visible language navigation.
 - Three localized SVG illustrations per README, with translated visible text, locale-appropriate font stacks, and descriptive alt text.
 - Descriptive headings, tables, and examples written for people first.
-- A static, server-rendered GitHub Pages document with a canonical URL, Open Graph metadata, and JSON-LD describing the source repository.
+- Static Chinese, English, Japanese, and Korean GitHub Pages documents with canonical URLs, bidirectional `hreflang` alternates, Open Graph metadata, and JSON-LD.
 - `robots.txt` allowing public crawling, including `OAI-SearchBot`, and pointing to `sitemap.xml`.
-- `sitemap.xml` listing the canonical Pages URL.
+- `sitemap.xml` listing all localized Pages URLs and their reciprocal language alternates.
 - `llms.txt` as an experimental navigation aid. It is not treated as a ranking signal.
 - A capability matrix that distinguishes implemented APIs, local workflow code, best-effort model behavior, and missing functionality.
 
@@ -42,7 +42,7 @@ Do **not** add `faceswap`, `face-swap`, `lip-sync`, or `deepfake` as repository 
 - Google states that normal SEO practices apply to generative search and that useful, original, well-structured content matters more than AI-only formatting. Google also states that `llms.txt` neither helps nor harms Google Search visibility.
 - OpenAI states that public pages should not block `OAI-SearchBot` if they should be eligible for ChatGPT search summaries and citations.
 - Bing recommends sitemaps for coverage and IndexNow for freshness. IndexNow requires a verified key and should be configured only after the Pages site is live.
-- Multilingual website pages should have distinct URLs and `hreflang`. GitHub README files already have distinct URLs, but GitHub controls their HTML head; the hosted Pages site should add locale-specific pages before adding `hreflang` alternates.
+- Multilingual website pages should have distinct URLs and `hreflang`. GitHub README files already have distinct URLs, but GitHub controls their HTML head; the hosted Pages site now provides an English page at `/en/`, a Japanese page at `/ja/`, a Korean page at `/ko/`, and uses the Chinese root page as `zh-Hans` and `x-default`.
 
 ## Manual actions after Pages is live
 

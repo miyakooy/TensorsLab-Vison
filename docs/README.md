@@ -1,6 +1,6 @@
 # TensorsLab Vision Pages
 
-`index.html` is the static GitHub Pages landing page for this repository.
+`index.html` is the Chinese and default static GitHub Pages landing page for this repository. The localized showcase pages live at `en/index.html`, `ja/index.html`, and `ko/index.html`.
 
 After pushing the workflow, enable **Settings → Pages → Build and deployment → Source: GitHub Actions**. This repository currently has no Pages site until that one-time setting is enabled; without it, the `Configure Pages` step returns 404 and the deployment stops before uploading `docs/`. GitHub will publish the page at the repository's Pages URL, normally `https://miyakooy.github.io/TensorsLab-Vison/`.
 
@@ -11,6 +11,6 @@ If a run is already marked failed, enable the source above and use **Actions →
 Discovery files published with the page:
 
 - `robots.txt` allows public search crawling and explicitly allows `OAI-SearchBot`.
-- `sitemap.xml` contains the canonical page URL.
+- `sitemap.xml` contains every localized page URL plus reciprocal `hreflang` annotations.
 - `llms.txt` is an experimental navigation summary, not a claimed ranking signal.
 - `discoverability.md` explains the evidence and the remaining manual Search Console, Bing and GitHub topic steps.

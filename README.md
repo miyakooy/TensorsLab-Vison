@@ -132,7 +132,7 @@ See [`skills/miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) f
 
 ## Community showcase
 
-See the [visual showcase and reproducible use-case queue](examples/README.md) for ecommerce product videos, product comparisons, detail-page kits, and entertainment portrait effects. Published visuals are clearly separated from workflows that can already run end to end in this repository.
+See the [visual showcase and reproducible use-case queue](examples/README.en.md) for ecommerce product videos, product comparisons, detail-page kits, and entertainment portrait effects. Published visuals are clearly separated from workflows that can already run end to end in this repository.
 
 ### Does this repository support face swap?
 
@@ -153,6 +153,6 @@ The tests make no paid API calls. To verify live generation, run one low-cost re
 - [Workshop skill](skills/miaodashi-workshop/SKILL.md) · [Quality gates](skills/miaodashi-workshop/references/quality-gates.md)
 - [Community showcase](examples/README.md) · [Contributing](CONTRIBUTING.md)
 - [GEO / search discoverability notes](docs/discoverability.md)
-- [GitHub Pages site](https://miyakooy.github.io/TensorsLab-Vison/)
+- [English GitHub Pages showcase](https://miyakooy.github.io/TensorsLab-Vison/en/)
 
 GitHub Pages must first be enabled under **Settings → Pages → Source: GitHub Actions**. The workflow cannot create that repository setting by itself.
