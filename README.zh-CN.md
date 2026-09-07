@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/api-scenes.svg" alt="TensorsLab 图像 API、视频 API 与审核优先的工作流架构" width="100%" />
+  <img src="docs/assets/api-scenes.zh-CN.svg" alt="TensorsLab 图像 API、视频 API 与审核优先的工作流架构" width="100%" />
 </p>
 
 这个仓库不是 Miaodashi 产品功能的宣传页，而是三个可以安装和检查源码的 Skill：
@@ -98,7 +98,7 @@ python skills/tl-video/scripts/tensorslab_video.py \
 ## 电商审核工作流
 
 <p align="center">
-  <img src="docs/assets/workshop-flow.svg" alt="素材经过事实锁定、提示词计划、生成、质检和交付" width="100%" />
+  <img src="docs/assets/workshop-flow.zh-CN.svg" alt="素材经过事实锁定、提示词计划、生成、质检和交付" width="100%" />
 </p>
 
 先创建不调用 API 的本地计划：
@@ -113,6 +113,10 @@ python skills/miaodashi-workshop/scripts/create_run.py \
 ```
 
 之后依次补全 `plan.json`、确认 `prompts.md`、执行 `approve_run.py`、生成 `dispatch.json`，最后逐项执行并用 `record_result.py` 登记结果。完整命令见 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)。
+
+<p align="center">
+  <img src="docs/assets/quality-gates.zh-CN.svg" alt="本地计划、提示词、任务清单、质检与派发记录" width="100%" />
+</p>
 
 ## 测试
 

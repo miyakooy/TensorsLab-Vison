@@ -18,6 +18,34 @@ READMES = [
 
 
 class DocumentationTests(unittest.TestCase):
+    def test_each_locale_uses_localized_illustrations(self) -> None:
+        localized_assets = {
+            "README.md": [
+                "api-scenes.svg",
+                "workshop-flow.svg",
+                "quality-gates.svg",
+            ],
+            "README.zh-CN.md": [
+                "api-scenes.zh-CN.svg",
+                "workshop-flow.zh-CN.svg",
+                "quality-gates.zh-CN.svg",
+            ],
+            "README.ja.md": [
+                "api-scenes.ja.svg",
+                "workshop-flow.ja.svg",
+                "quality-gates.ja.svg",
+            ],
+            "README.ko.md": [
+                "api-scenes.ko.svg",
+                "workshop-flow.ko.svg",
+                "quality-gates.ko.svg",
+            ],
+        }
+        for readme_name, asset_names in localized_assets.items():
+            content = (ROOT / readme_name).read_text(encoding="utf-8")
+            for asset_name in asset_names:
+                self.assertIn(f'docs/assets/{asset_name}', content, readme_name)
+
     def test_local_readme_links_exist(self) -> None:
         markdown_link = re.compile(r"!?\[[^]]*\]\(([^)]+)\)")
         html_target = re.compile(r"(?:href|src)=\"([^\"]+)\"")

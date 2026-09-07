@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/api-scenes.svg" alt="TensorsLab の画像 API、動画 API、レビュー優先ワークフロー" width="100%" />
+  <img src="docs/assets/api-scenes.ja.svg" alt="TensorsLab の画像 API、動画 API、レビュー優先ワークフロー" width="100%" />
 </p>
 
 このリポジトリには、ソースを確認してインストールできる 3 つの Skill があります。
@@ -90,10 +90,14 @@ API Key は [TensorsLab Console](https://tensorai.tensorslab.com/) で取得で�
 ## ワークショップとテスト
 
 <p align="center">
-  <img src="docs/assets/workshop-flow.svg" alt="素材、事実確認、プロンプト計画、生成、QA、納品の流れ" width="100%" />
+  <img src="docs/assets/workshop-flow.ja.svg" alt="素材、事実確認、プロンプト計画、生成、QA、納品の流れ" width="100%" />
 </p>
 
 完全な手順は [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) を参照してください。
+
+<p align="center">
+  <img src="docs/assets/quality-gates.ja.svg" alt="計画、プロンプト、マニフェスト、QA、実行記録" width="100%" />
+</p>
 
 ```bash
 python -m unittest discover -s tests -v

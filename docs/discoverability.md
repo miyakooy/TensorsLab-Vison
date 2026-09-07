@@ -6,7 +6,8 @@ This document records the repository's discoverability choices and separates est
 
 - One canonical project name: **TensorsLab Vision Skills**.
 - Separate English, Simplified Chinese, Japanese, and Korean README URLs with visible language navigation.
-- Descriptive headings, tables, examples, and image alt text written for people first.
+- Three localized SVG illustrations per README, with translated visible text, locale-appropriate font stacks, and descriptive alt text.
+- Descriptive headings, tables, and examples written for people first.
 - A static, server-rendered GitHub Pages document with a canonical URL, Open Graph metadata, and JSON-LD describing the source repository.
 - `robots.txt` allowing public crawling, including `OAI-SearchBot`, and pointing to `sitemap.xml`.
 - `sitemap.xml` listing the canonical Pages URL.
