@@ -1,0 +1,57 @@
+name: 作品与场景贡献
+description: 提交可复现的电商、泛娱乐或文旅视觉用例
+title: "[Showcase] "
+labels: ["showcase", "scenario"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢贡献。请描述真实输入、输出和能力边界；不要在公开 Issue 中上传 API Key、客户隐私或未授权的人物素材。
+  - type: dropdown
+    id: vertical
+    attributes:
+      label: 场景类别
+      options:
+        - 电商与营销
+        - 泛娱乐
+        - 文旅新媒体
+        - 通用图像或视频
+    validations:
+      required: true
+  - type: input
+    id: outcome
+    attributes:
+      label: 希望完成的交付物
+      placeholder: 例如：15 秒 9:16 商品对比视频，共 3 个镜头
+    validations:
+      required: true
+  - type: textarea
+    id: inputs
+    attributes:
+      label: 输入素材与不可变事实
+      description: 列出素材角色、商品事实、人物身份和禁止修改的内容。
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: 当前制作步骤
+      description: 如果知道，请提供 Skill、模型、Prompt、参数、后期步骤和失败情况。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 可公开的作品或运行证据
+      description: 提供链接、脱敏截图或任务记录。不要包含密钥和客户隐私。
+    validations:
+      required: true
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: 素材权利确认
+      options:
+        - label: 我确认有权公开和使用所提交的素材；涉及人物时已获得必要同意。
+          required: true
+        - label: 我理解该用例必须区分已实现能力、尽力而为能力和外部后期步骤。
+          required: true

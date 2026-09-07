@@ -99,11 +99,20 @@ API Key는 [TensorsLab Console](https://tensorai.tensorslab.com/)에서 받을 �
   <img src="docs/assets/quality-gates.ko.svg" alt="계획, 프롬프트, 매니페스트, QA 및 실행 기록" width="100%" />
 </p>
 
+## 커뮤니티 작품과 사용 사례
+
+[작품 갤러리와 재현 가능한 사용 사례 목록](examples/README.md)에서 이커머스 상품 영상, 상품 비교, 상세 페이지 세트와 엔터테인먼트 인물 효과를 볼 수 있습니다. 공개된 참고 작품과 이 저장소에서 실제로 실행 가능한 워크플로를 명확히 구분합니다.
+
+### Face swap / faceswap을 지원하나요?
+
+범용 image-to-image API를 통해 얼굴 교체를 시도할 수는 있지만 전용 `faceswap`, `face-swap`, 마스크, 신원 일관성 또는 Deepfake 파이프라인은 없습니다. 결과는 최선 노력 방식으로 모두 검토해야 하며, 사용 권한과 당사자 동의를 확보한 미디어만 사용해야 합니다.
+
 ```bash
 python -m unittest discover -s tests -v
 ```
 
 - [이미지 Skill](skills/tl-image/SKILL.md)
 - [비디오 Skill](skills/tl-video/SKILL.md)
+- [커뮤니티 작품](examples/README.md) · [기여 가이드](CONTRIBUTING.md)
 - [GEO / 검색 노출 가이드](docs/discoverability.md)
 - [GitHub Pages](https://miyakooy.github.io/TensorsLab-Vison/)

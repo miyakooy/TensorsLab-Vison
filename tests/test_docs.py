@@ -13,6 +13,8 @@ READMES = [
     ROOT / "README.zh-CN.md",
     ROOT / "README.ja.md",
     ROOT / "README.ko.md",
+    ROOT / "CONTRIBUTING.md",
+    ROOT / "examples/README.md",
     ROOT / "docs/README.md",
 ]
 
@@ -77,6 +79,14 @@ class DocumentationTests(unittest.TestCase):
         payload = json.loads(match.group(1))
         self.assertEqual(payload["@type"], "SoftwareSourceCode")
         self.assertEqual(payload["codeRepository"], "https://github.com/miyakooy/TensorsLab-Vison")
+        self.assertIn("image to video", payload["keywords"])
+
+    def test_showcase_keeps_capability_boundaries_visible(self) -> None:
+        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+        self.assertIn('id="showcase"', html)
+        self.assertIn("WORKFLOW READY", html)
+        self.assertIn("BEST EFFORT", html)
+        self.assertIn("不是专用 faceswap", html)
 
     def test_marketplace_sources_are_installable_skill_folders(self) -> None:
         marketplace = json.loads(

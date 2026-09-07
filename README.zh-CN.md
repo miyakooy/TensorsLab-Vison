@@ -118,6 +118,14 @@ python skills/miaodashi-workshop/scripts/create_run.py \
   <img src="docs/assets/quality-gates.zh-CN.svg" alt="本地计划、提示词、任务清单、质检与派发记录" width="100%" />
 </p>
 
+## 社区作品与场景
+
+查看[作品展示与可复现用例队列](examples/README.md)，其中包括电商商品短视频、商品对比、详情页视觉组和泛娱乐人物特效。页面会明确区分“已经可以由本仓库执行的工作流”和“仍在征集完整配方的视觉参考”。
+
+### 支持 Face Swap / faceswap 吗？
+
+当前只能通过通用图生图接口尝试**人脸替换**，属于生成式尽力而为。本仓库没有专用 `faceswap`、`face-swap`、遮罩、身份一致性或 Deepfake 流程。必须逐张审核，并且只能使用拥有使用权且已经获得相关人物同意的素材。
+
 ## 测试
 
 ```bash
@@ -131,6 +139,7 @@ python -m unittest discover -s tests -v
 - [图像 Skill](skills/tl-image/SKILL.md) · [图像 API](skills/tl-image/references/api_reference.md)
 - [视频 Skill](skills/tl-video/SKILL.md) · [视频 API](skills/tl-video/references/api_reference.md)
 - [工作坊 Skill](skills/miaodashi-workshop/SKILL.md) · [质量门禁](skills/miaodashi-workshop/references/quality-gates.md)
+- [社区作品展示](examples/README.md) · [贡献指南](CONTRIBUTING.md)
 - [GEO 与搜索收录说明](docs/discoverability.md)
 - [GitHub Pages 展示页](https://miyakooy.github.io/TensorsLab-Vison/)
 

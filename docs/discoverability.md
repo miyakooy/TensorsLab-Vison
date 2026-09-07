@@ -28,9 +28,14 @@ There is no reliable “GEO hack.” The durable approach is the same foundation
 Recommended GitHub topics:
 
 ```text
-tensorslab, agent-skills, claude-code, image-generation, video-generation,
-text-to-image, image-to-video, ecommerce, creative-workflow, python
+tensorslab, agent-skill, agent-skills, claude-code, image-generation,
+video-generation, text-to-image, image-to-video, generative-ai, ai-video,
+ecommerce, product-video, creative-workflow, prompt-engineering, python
 ```
+
+GitHub does not publish keyword search volume, so these are not presented as a “hot search” ranking. They were selected from active GitHub topic ecosystems and retained only when the repository has matching code or documentation. As checked on 2026-09-07, broad topics such as `ecommerce` have far more competing repositories, while `agent-skill`, `image-to-video`, and `text-to-image` describe this repository more precisely.
+
+Do **not** add `faceswap`, `face-swap`, `lip-sync`, or `deepfake` as repository topics yet. The current image client can only attempt face replacement through general image-to-image prompting; there is no dedicated mask, identity-consistency, consent-control, or face-swap test suite. The README contains an explicit Face Swap FAQ so accurate searches can still find the capability boundary.
 
 ## Crawler notes
 
@@ -46,7 +51,8 @@ text-to-image, image-to-video, ecommerce, creative-workflow, python
 3. Add the Pages property to Google Search Console and submit `/sitemap.xml`.
 4. Add the site to Bing Webmaster Tools and submit the same sitemap.
 5. Add the GitHub topics above from the repository's **About** settings.
-6. Track queries and citations; improve pages that lack clear examples or evidence instead of producing keyword variants.
+6. Replace the current GitHub repository description and homepage; they still point to an older project description and `github.com/tensorslab/skills`. Suggested description: `AI agent skills for text-to-image, image-to-video, ecommerce product visuals, review-first QA, and resumable TensorsLab workflows.`
+7. Track queries and citations; improve pages that lack clear examples or evidence instead of producing keyword variants.
 
 ## Primary guidance used
 

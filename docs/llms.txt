@@ -13,11 +13,13 @@ This is an experimental navigation file, not a ranking signal. Prefer the linked
 - [Image skill](https://github.com/miyakooy/TensorsLab-Vison/blob/main/skills/tl-image/SKILL.md)
 - [Video skill](https://github.com/miyakooy/TensorsLab-Vison/blob/main/skills/tl-video/SKILL.md)
 - [Review-first workshop](https://github.com/miyakooy/TensorsLab-Vison/blob/main/skills/miaodashi-workshop/SKILL.md)
+- [Community showcase and use-case queue](https://github.com/miyakooy/TensorsLab-Vison/blob/main/examples/README.md)
+- [Contribution guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/CONTRIBUTING.md)
 - [Search and GEO notes](https://github.com/miyakooy/TensorsLab-Vison/blob/main/docs/discoverability.md)
 
 ## Capability boundary
 
 - Implemented: image/video task submission, status polling, downloads, request dry-runs, and local workflow records.
 - Workflow only: listing kits, creative batches, multi-ratio plans, and SKU plans; commands run one task at a time.
-- Best effort: prompt-driven retouching, watermark/object removal, and face transformation through a general image-to-image endpoint.
+- Best effort: prompt-driven retouching, watermark/object removal, and face transformation through a general image-to-image endpoint. This is not a dedicated faceswap, face-swap, or deepfake pipeline.
 - Not implemented: exact masked editing, deterministic typography, parallel batch execution, browser UI, and managed collaboration.

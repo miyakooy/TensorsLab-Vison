@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="TensorsLab Vision：为电商和品牌团队提供可确认、可复用的图像与视频视觉生产工作流。"
+      content="TensorsLab Vision：可安装的 AI Agent Skills，支持文生图、图生图、文生视频、图生视频与可审核的电商视觉生产工作流。"
     />
     <title>TensorsLab Vision · 视觉生产实验室</title>
     <link rel="canonical" href="https://miyakooy.github.io/TensorsLab-Vison/" />
@@ -26,13 +26,13 @@
         "programmingLanguage": "Python",
         "runtimePlatform": "Python 3",
         "url": "https://miyakooy.github.io/TensorsLab-Vison/",
-        "keywords": ["TensorsLab", "agent skills", "image generation", "video generation", "ecommerce creative workflow"]
+        "keywords": ["TensorsLab", "AI agent skills", "Claude Code skills", "text to image", "image to video", "video generation", "ecommerce product video", "creative workflow"]
       }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Noto+Serif+SC:wght@400;500;600;700&family=Source+Han+Sans+SC:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;family=Source+Han+Sans+SC:wght@400;500;600&amp;display=swap"
       rel="stylesheet"
     />
     <style>
@@ -293,6 +293,23 @@
       .workflow-card h3 { margin: 19px 0 7px; font-family: "Noto Serif SC", serif; font-size: 22px; font-weight: 500; }
       .workflow-card p { margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.75; }
 
+      .showcase-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+      .showcase-card { grid-column: span 6; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: rgba(255, 253, 248, 0.72); transition: transform 180ms ease, box-shadow 180ms ease; }
+      .showcase-card:nth-child(1), .showcase-card:nth-child(4) { grid-column: span 7; }
+      .showcase-card:nth-child(2), .showcase-card:nth-child(3) { grid-column: span 5; }
+      .showcase-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+      .showcase-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--paper-deep); }
+      .showcase-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 500ms cubic-bezier(.2,.8,.2,1); }
+      .showcase-card:hover img { transform: scale(1.025); }
+      .showcase-status { position: absolute; top: 14px; left: 14px; padding: 6px 9px; color: var(--paper); border-radius: 2px; background: rgba(16, 45, 42, 0.9); font-family: "DM Mono", monospace; font-size: 9px; letter-spacing: 0.08em; }
+      .showcase-status.partial { color: var(--ink); background: rgba(233, 169, 72, 0.94); }
+      .showcase-copy { padding: 22px; }
+      .showcase-copy h3 { margin: 0 0 8px; font-family: "Noto Serif SC", serif; font-size: 24px; font-weight: 500; }
+      .showcase-copy p { margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.75; }
+      .showcase-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 17px; }
+      .showcase-meta span { padding: 5px 8px; color: var(--clay-dark); border: 1px solid rgba(191, 90, 63, 0.22); border-radius: 99px; font-family: "DM Mono", monospace; font-size: 9px; }
+      .showcase-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
       .production { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 28px; align-items: start; }
       .roles { display: grid; gap: 8px; }
       .role { display: grid; grid-template-columns: 33px 100px 1fr; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
@@ -313,6 +330,7 @@
 
       @media (max-width: 1000px) {
         .endpoint-grid, .workflow-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .showcase-card, .showcase-card:nth-child(n) { grid-column: span 6; }
         .hero { grid-template-columns: 1fr; min-height: 0; }
         .hero-visual { max-width: 620px; width: 100%; }
       }
@@ -329,6 +347,8 @@
         .section-head { display: block; }
         .section-note { margin-top: 13px; }
         .endpoint-grid, .workflow-grid, .production { grid-template-columns: 1fr; }
+        .showcase-grid { grid-template-columns: 1fr; }
+        .showcase-card, .showcase-card:nth-child(n) { grid-column: auto; }
         .inspector { grid-template-columns: 1fr; gap: 11px; }
         .inspector .copy { justify-self: start; }
         .role { grid-template-columns: 25px 82px 1fr; gap: 7px; }
@@ -344,6 +364,7 @@
           <span class="brand-name"><strong>TensorsLab</strong><span>VISION</span></span>
         </a>
         <nav class="nav" aria-label="主导航">
+          <a href="#showcase">作品</a>
           <a href="#workflows">工作流</a>
           <a href="#api" class="active">实验室</a>
           <a href="#start">开始使用</a>
@@ -395,6 +416,32 @@
             <button class="tab" data-filter="video">视频</button>
           </div>
           <div class="workflow-grid" id="workflow-grid"></div>
+        </section>
+
+        <section id="showcase" class="section" aria-labelledby="showcase-title">
+          <div class="section-head">
+            <div><div class="eyebrow">Community showcase</div><h2 id="showcase-title">先看作品，再看它是否能复现。</h2></div>
+            <p class="section-note">公开视觉来自 miaodashi.com。每张卡片都标出仓库当前能执行的部分与仍需补齐的能力，不用效果图代替功能证明。</p>
+          </div>
+          <div class="showcase-grid">
+            <article class="showcase-card">
+              <div class="showcase-media"><img src="https://miaodashi.com/cap-short-video.jpg" alt="厨具商品短视频与竖屏社媒内容示例" loading="lazy" /><span class="showcase-status">WORKFLOW READY</span></div>
+              <div class="showcase-copy"><h3>电商商品短视频</h3><p>从已确认商品图规划商品展示、开箱或广告镜头，再用 tl-video 逐镜生成。可控台词、口型、字幕与最终剪辑仍需外部工具。</p><div class="showcase-meta"><span>IMAGE-TO-VIDEO</span><span>PRODUCT VIDEO</span><span>9:16</span></div></div>
+            </article>
+            <article class="showcase-card">
+              <div class="showcase-media"><img src="https://miaodashi.com/cap-comparison-video.jpg" alt="商品场景清理前后对比示例" loading="lazy" /><span class="showcase-status partial">BEST EFFORT</span></div>
+              <div class="showcase-copy"><h3>商品清理与对比</h3><p>支持通用图生图和前后对比计划；当前没有遮罩 API，精确局部消除不会被描述为确定性能力。</p><div class="showcase-meta"><span>IMAGE EDITING</span><span>QA</span></div></div>
+            </article>
+            <article class="showcase-card">
+              <div class="showcase-media"><img src="https://miaodashi.com/cap-poster.jpg" alt="商品卖点、尺寸与详情页视觉组示例" loading="lazy" /><span class="showcase-status">PLAN READY</span></div>
+              <div class="showcase-copy"><h3>商品详情页视觉组</h3><p>listing-kit 可以拆分主图、结构、材质和场景任务；价格、参数和法务文案保留给确定性排版。</p><div class="showcase-meta"><span>ECOMMERCE</span><span>TEXT-TO-IMAGE</span></div></div>
+            </article>
+            <article class="showcase-card">
+              <div class="showcase-media"><img src="https://miaodashi.com/scene-beauty-effects.webp" alt="多人像统一视觉特效的泛娱乐模板参考" loading="lazy" /><span class="showcase-status partial">REFERENCE</span></div>
+              <div class="showcase-copy"><h3>泛娱乐人物特效</h3><p>可用多参考图与通用图生图做风格尝试，但不是专用 faceswap 或 Deepfake 管线。人物素材必须获得授权与同意。</p><div class="showcase-meta"><span>ENTERTAINMENT</span><span>CONSENT REQUIRED</span></div></div>
+            </article>
+          </div>
+          <div class="showcase-actions"><a class="button primary" href="https://github.com/miyakooy/TensorsLab-Vison/blob/main/examples/README.md">查看能力边界与用例 ↗</a><a class="button ghost" href="https://github.com/miyakooy/TensorsLab-Vison/issues/new?template=showcase.yml">贡献作品或场景 ↗</a><a class="button ghost" href="https://miaodashi.com">浏览更多公开案例 ↗</a></div>
         </section>
 
         <section class="section production" aria-labelledby="production-title">

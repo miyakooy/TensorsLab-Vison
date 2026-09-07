@@ -130,6 +130,14 @@ Then:
 
 See [`skills/miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) for the full commands and supported scenarios.
 
+## Community showcase
+
+See the [visual showcase and reproducible use-case queue](examples/README.md) for ecommerce product videos, product comparisons, detail-page kits, and entertainment portrait effects. Published visuals are clearly separated from workflows that can already run end to end in this repository.
+
+### Does this repository support face swap?
+
+It can attempt **face replacement** through the general image-to-image endpoint, but it does not provide a dedicated `faceswap`, `face-swap`, masking, identity-consistency, or deepfake pipeline. Treat the result as generative best effort, review every output, and use only media you are authorized to use with the depicted person's consent.
+
 ## Test
 
 ```bash
@@ -143,6 +151,7 @@ The tests make no paid API calls. To verify live generation, run one low-cost re
 - [Image skill](skills/tl-image/SKILL.md) · [Image API reference](skills/tl-image/references/api_reference.md)
 - [Video skill](skills/tl-video/SKILL.md) · [Video API reference](skills/tl-video/references/api_reference.md)
 - [Workshop skill](skills/miaodashi-workshop/SKILL.md) · [Quality gates](skills/miaodashi-workshop/references/quality-gates.md)
+- [Community showcase](examples/README.md) · [Contributing](CONTRIBUTING.md)
 - [GEO / search discoverability notes](docs/discoverability.md)
 - [GitHub Pages site](https://miyakooy.github.io/TensorsLab-Vison/)
 
