@@ -134,4 +134,3 @@ python -m unittest discover -s tests -v
 - [GEO 与搜索收录说明](docs/discoverability.md)
 - [GitHub Pages 展示页](https://miyakooy.github.io/TensorsLab-Vison/)
 
-首次部署 Pages 前，需要在 **Settings → Pages → Source** 选择 **GitHub Actions**。
