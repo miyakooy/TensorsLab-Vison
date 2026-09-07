@@ -1,106 +1,149 @@
 # TensorsLab Vision Skills
 
 <p align="center">
-  <img src="docs/assets/api-scenes.svg" alt="TensorsLab Vision API scenes and Miaodashi Workshop" width="100%" />
+  <strong>Executable image and video API skills, plus a review-first production planner.</strong>
 </p>
-
-TensorsLab Vision Skills provide reusable image and video API capabilities for coding agents. The package also includes **Miaodashi Visual Workshop**, a first-party workflow that turns product or campaign assets into a confirmed visual-production plan before calling the generation APIs.
-
-- **Developers** use `tl-image` and `tl-video` as direct TensorsLab API capabilities.
-- **Ecommerce operators, brands, and agencies** use `miaodashi-workshop` to plan product images, campaign creatives, and short-form product videos.
-
-Miaodashi is the no-code visual-production product built on the same workflow ideas. Visit [miaodashi.com](https://miaodashi.com) when a browser-based team workflow, batch production, or managed delivery is a better fit.
-
-## Visual Lab
-
-The repository includes a responsive product interface for GitHub Pages. After enabling the included Pages workflow, it is available at [TensorsLab Vision Lab](https://miyakooy.github.io/TensorsLab-Vison/). It presents the API scenes, Miaodashi workflows, installation path, and product handoff without replacing the developer documentation below.
-
-> **GitHub Pages setup:** in the repository settings, open **Pages → Build and deployment → Source**, select **GitHub Actions**, then re-run the `Deploy GitHub Pages` workflow. The first run cannot pass `Configure Pages` until this one-time setting exists.
-
-## At a glance
 
 <p align="center">
-  <img src="docs/assets/workshop-flow.svg" alt="Miaodashi Workshop confirmed production flow" width="100%" />
+  <a href="README.md">English</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.ko.md">한국어</a>
 </p>
 
-The repository has two layers: the existing `tl-image` and `tl-video` skills expose the TensorsLab API; `miaodashi-workshop` adds a confirmation-first production layer for ecommerce and campaign teams. It records decisions before generation, then reuses the existing clients instead of introducing another image or video API.
+<p align="center">
+  <img src="docs/assets/api-scenes.svg" alt="TensorsLab image API, video API, and review-first workflow architecture" width="100%" />
+</p>
 
-## How do Skills work?
+This repository contains three installable skills:
 
-Skills are self-contained folders that package instructions, scripts, and resources together for Claude Code. Each folder includes a `SKILL.md` file with YAML frontmatter followed by the instructions an agent needs for that use case.
+- `tl-image`: submits text-to-image or image-to-image tasks, polls their status, and downloads results.
+- `tl-video`: submits text-to-video or image-to-video tasks, polls their status, and downloads results.
+- `miaodashi-workshop`: creates local plans, approval records, dispatch commands, QA records, and selective retry state. It reuses the two API clients above and does **not** contain a second generation API.
 
-## Installation
+The no-code product at [miaodashi.com](https://miaodashi.com) is optional. The open-source API skills work independently.
 
-### Claude Code
+## What is actually implemented?
 
-Register this repository as a plugin marketplace:
-
-```text
-/plugin marketplace add https://github.com/miyakooy/TensorsLab-Vison
-```
-
-Install one skill:
-
-```text
-/plugin install <skill-name>@https://github.com/miyakooy/TensorsLab-Vison
-```
-
-For example:
-
-```text
-/plugin install tl-image@https://github.com/miyakooy/TensorsLab-Vison
-```
-
-### OpenCode and other compatible agents
-
-```bash
-npx skills add miyakooy/TensorsLab-Vison -g -y
-```
-
-## Available Skills
-
-| Name | Description | Documentation |
+| Capability | Status | Evidence / boundary |
 | --- | --- | --- |
-| `tl-image` | Generate or edit images with TensorsLab models. | [SKILL.md](skills/tl-image/SKILL.md) |
-| `tl-video` | Generate videos from text or source images with TensorsLab models. | [SKILL.md](skills/tl-video/SKILL.md) |
-| `miaodashi-workshop` | Plan and quality-check ecommerce and campaign visual work, then delegate generation to `tl-image` and `tl-video`. | [SKILL.md](skills/miaodashi-workshop/SKILL.md) |
+| Text-to-image and image-to-image | **Implemented** | `tensorslab_image.py` calls the documented SeeDream V4/V4.5 and Z-Image endpoints. |
+| Text-to-video and image-to-video | **Implemented** | `tensorslab_video.py` calls four documented SeeDance endpoints. |
+| Task polling and local download | **Implemented** | Both clients poll task status and save returned URLs locally. |
+| Credential-free request preview | **Implemented** | Both clients support `--dry-run`; no API key or paid request is used. |
+| Plan → approval → dispatch → QA record | **Implemented locally** | Four workshop scripts create JSON/Markdown records and exact client commands. |
+| Listing kits, creative batches, multi-ratio plans, SKU plans | **Workflow implemented** | Planning and per-task dispatch exist; there is no parallel batch executor yet. |
+| Retouch, watermark removal, object removal, face replacement | **Generative best effort** | These use the general image-to-image endpoint plus prompts. There is no dedicated mask or deterministic editing API in this repository. |
+| Exact masked/local replacement | **Not implemented** | The workflow stops at `approved_pending_capability`. A mask API or compositor is required. |
+| Deterministic typography and legal copy layout | **Not implemented** | Add approved copy in a design/post-production tool. |
+| Browser UI, team review, managed batch delivery | **Not in this repository** | Use [Miaodashi](https://miaodashi.com) if that product workflow is required. |
 
-## Environment Setup
+> Verification level: the repository has offline smoke tests for CLI validation and the complete local workshop lifecycle. Live generation is not run in public CI because it needs a private API key and consumes credits.
 
-Developers need a TensorsLab API key. Get one at the [TensorsLab Console](https://tensorai.tensorslab.com/).
+## Install
+
+### Claude Code marketplace
+
+```text
+/plugin marketplace add miyakooy/TensorsLab-Vison
+/plugin install tl-image@tensorslab-skills
+/plugin install tl-video@tensorslab-skills
+/plugin install miaodashi-workshop@tensorslab-skills
+```
+
+After installation, describe the task naturally or invoke the installed skill explicitly, for example:
+
+```text
+/tl-image:tensorslab-image Generate a 4:5 studio product image of a ceramic cup.
+/tl-video:tensorslab-video Animate product.jpg into a 5-second 9:16 turntable shot.
+/miaodashi-workshop:miaodashi-workshop Plan five listing images, ask me to approve them, then prepare the API commands.
+```
+
+### Clone and use the Python clients directly
 
 ```bash
-# Windows (PowerShell)
-$env:TENSORSLAB_API_KEY="your-api-key"
-
-# Mac/Linux
+git clone https://github.com/miyakooy/TensorsLab-Vison.git
+cd TensorsLab-Vison
+python -m pip install -r requirements.txt
 export TENSORSLAB_API_KEY="your-api-key"
 ```
 
-For a no-code, team-oriented visual workflow, visit [Miaodashi](https://miaodashi.com).
+Get an API key from the [TensorsLab Console](https://tensorai.tensorslab.com/). Prefer the environment variable over `--api-key` so the secret is not saved in shell history.
 
-## Using Skills
+## Quick start
 
-Once installed, mention the task directly:
+Preview a request without an API key or API call:
 
-- “Generate an image of an astronaut on the moon.”
-- “Animate this scenery picture into a 10-second video.”
-- “Use Miaodashi Workshop to turn these product photos into listing images and a short vertical product video.”
+```bash
+python skills/tl-image/scripts/tensorslab_image.py \
+  "studio product photo of a ceramic cup" \
+  --model seedreamv45 --resolution 4:5 --batch-size 3 --dry-run
+```
 
-## Miaodashi Visual Workshop
+Generate an image:
+
+```bash
+python skills/tl-image/scripts/tensorslab_image.py \
+  "studio product photo of a ceramic cup" \
+  --model seedreamv45 --resolution 4:5
+```
+
+Animate a local image:
+
+```bash
+python skills/tl-video/scripts/tensorslab_video.py \
+  "slow camera orbit; preserve the product shape and label" \
+  --source ./product.jpg --model seedancev2 \
+  --ratio 9:16 --duration 5 --resolution 1080p
+```
+
+Outputs are downloaded to `./tensorslab_output/` unless `--output-dir` is supplied.
+
+## Review-first ecommerce workflow
 
 <p align="center">
-  <img src="docs/assets/quality-gates.svg" alt="Quality gates and local run artifacts" width="100%" />
+  <img src="docs/assets/workshop-flow.svg" alt="Assets move through fact locking, prompt planning, generation, quality review, and delivery" width="100%" />
 </p>
 
-The workshop follows a first-party production path: asset-role registration, product-fact lock, prompt-plan confirmation, TensorsLab generation, per-task quality review, selective retry, and delivery records. It does not replace `tl-image` or `tl-video`; it plans tasks and reuses those existing API clients after the user approves the run.
+Create a local plan. This command does not call the API:
 
-Image workflows: phone-photo retouch, quick creative, listing and detail-page kits, creative batches, reference-led layouts, style series, multi-ratio adaptation, batch SKU templates, and local-replacement planning. Video workflows: product showcases, social-ad clips, and campaign sequences.
+```bash
+python skills/miaodashi-workshop/scripts/create_run.py \
+  --project cup-launch \
+  --scenario listing-kit \
+  --platform amazon \
+  --source ./product-front.jpg \
+  --source ./product-side.jpg
+```
 
-Every local run keeps `plan.json`, `prompts.md`, `manifest.json`, and `qa.json`. Before a billable call, `prepare_dispatch.py` creates a review-only `dispatch.json` that shows the exact existing TensorsLab client command per task. This provides an explicit approval gate and lets a failed task be retried without overwriting successful assets. The local-replacement scenario accurately pauses for a masking API or post-production compositor, because the current TensorsLab image interface does not expose a masking parameter.
+Then:
 
-## Related products
+1. Fill `constraints` and every task prompt in `.miaodashi_output/cup-launch/plan.json`.
+2. Review `prompts.md` and obtain explicit user approval.
+3. Record approval with `approve_run.py`.
+4. Build exact, review-only client commands with `prepare_dispatch.py`.
+5. Run approved commands one task at a time and record outputs with `record_result.py`.
 
-- [Miaodashi](https://miaodashi.com) — visual-production workflows for ecommerce teams, brands, and agencies.
-- [TensorsLab Design](https://github.com/miyakooy/TensorsLab-design) — product and campaign page design outputs.
-- [NewMedia Kit](https://github.com/miyakooy/NewMedia) — downstream content production for approved visual assets.
+<p align="center">
+  <img src="docs/assets/quality-gates.svg" alt="Local plan, prompt, manifest, QA, and dispatch records" width="100%" />
+</p>
+
+See [`skills/miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) for the full commands and supported scenarios.
+
+## Test
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The tests make no paid API calls. To verify live generation, run one low-cost request with your own key after checking `--dry-run` output.
+
+## Documentation and discovery
+
+- [Image skill](skills/tl-image/SKILL.md) · [Image API reference](skills/tl-image/references/api_reference.md)
+- [Video skill](skills/tl-video/SKILL.md) · [Video API reference](skills/tl-video/references/api_reference.md)
+- [Workshop skill](skills/miaodashi-workshop/SKILL.md) · [Quality gates](skills/miaodashi-workshop/references/quality-gates.md)
+- [GEO / search discoverability notes](docs/discoverability.md)
+- [GitHub Pages site](https://miyakooy.github.io/TensorsLab-Vison/)
+
+GitHub Pages must first be enabled under **Settings → Pages → Source: GitHub Actions**. The workflow cannot create that repository setting by itself.

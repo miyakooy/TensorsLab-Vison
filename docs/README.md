@@ -7,3 +7,10 @@ After pushing the workflow, enable **Settings → Pages → Build and deployment
 The page uses no build step and no product imagery. It presents the active image/video API endpoints, all current Miaodashi workflow scenarios, direct repository installation, and the Miaodashi product handoff. The workflow cards distinguish planned capabilities such as local replacement from directly executable API paths.
 
 If a run is already marked failed, enable the source above and use **Actions → Deploy GitHub Pages → Run workflow** to re-run it. No code change is required for that settings-only fix.
+
+Discovery files published with the page:
+
+- `robots.txt` allows public search crawling and explicitly allows `OAI-SearchBot`.
+- `sitemap.xml` contains the canonical page URL.
+- `llms.txt` is an experimental navigation summary, not a claimed ranking signal.
+- `discoverability.md` explains the evidence and the remaining manual Search Console, Bing and GitHub topic steps.

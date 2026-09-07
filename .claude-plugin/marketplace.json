@@ -4,27 +4,27 @@
     "name": "TensorsLab"
   },
   "metadata": {
-    "description": "TensorsLab image and video API skills, plus Miaodashi Visual Workshop workflows for ecommerce and campaign creative production.",
-    "version": "1.2.0"
+    "description": "Executable TensorsLab image and video API skills, plus a local review-first planner for ecommerce and campaign production.",
+    "version": "1.3.0"
   },
   "plugins": [
     {
       "name": "tl-image",
       "source": "./skills/tl-image",
       "skills": "./",
-      "description": "TensorsLab Image Generation Skill. Seamlessly generate high-quality images via Text-to-Image or edit/synthesize using Image-to-Image. Features intelligent prompt enrichment and automated local file delivery."
+      "description": "Submit TensorsLab text-to-image or image-to-image tasks, validate parameters, preview requests, poll status, and save results locally."
     },
     {
       "name": "tl-video",
       "source": "./skills/tl-video",
       "skills": "./",
-      "description": "TensorsLab Video Generation Skill. Effortlessly create stunning videos via Text-to-Video or animate images via Image-to-Video. Includes automatic scene property deduction, real-time terminal progress tracking, and seamless local downloads."
+      "description": "Submit TensorsLab text-to-video or image-to-video tasks, validate model-specific parameters, preview requests, poll status, and save results locally."
     },
     {
       "name": "miaodashi-workshop",
       "source": "./skills/miaodashi-workshop",
       "skills": "./",
-      "description": "Miaodashi Visual Workshop. Create reviewable ecommerce image/video plans, preflight exact TensorsLab client commands without calling the API, approve locally, and record QA with selective retries."
+      "description": "Create reviewable ecommerce image/video plans, approve them locally, prepare exact TensorsLab client commands, and record QA with selective retries."
     }
   ]
 }

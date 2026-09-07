@@ -4,6 +4,8 @@
 
 All scenarios below use the same script `scripts/tensorslab_image.py`. The difference is in the **prompt engineering** - each scenario requires specific prompt templates and enhancements to achieve the desired effect.
 
+These are **best-effort generative transformations**, not separate product capabilities. The repository does not provide masks, region coordinates, identity verification, OCR cleanup, or deterministic inpainting. Do not promise exact watermark removal, exact object boundaries, or identity-preserving face replacement. Confirm that the user has the rights and consent needed for the supplied assets.
+
 ## Avatar Generation
 
 Generate profile/avatar images in various styles. Supports both generation from text description and generation based on a reference image.
@@ -69,7 +71,7 @@ python scripts/tensorslab_image.py "[enhanced prompt]" --source ./photo.jpg --re
 
 ## Watermark Removal
 
-Remove watermarks from images while preserving visual integrity.
+Attempt to remove a watermark through generative reconstruction. Results may change nearby texture or content; use a licensed source or deterministic editor when exact preservation matters.
 
 **User Input Examples:**
 - "帮我去掉 `./image.jpg` 的水印"
@@ -99,7 +101,7 @@ python scripts/tensorslab_image.py "[removal prompt]" --source ./image.jpg
 
 ## Object Erasure
 
-Remove unwanted objects/people from images.
+Attempt to remove unwanted objects or people through generative reconstruction. The client does not accept a mask, so the changed area cannot be guaranteed.
 
 **User Input Examples:**
 - "把 `./photo.jpg` 里多余的路人擦掉"
@@ -135,7 +137,7 @@ python scripts/tensorslab_image.py "[erasure prompt]" --source ./photo.jpg
 
 ## Face Replacement
 
-Replace a face in a target image with a face from a source image.
+Attempt a consented face transformation using two references. The endpoint is general image-to-image generation, not a dedicated face-swap service, so identity and placement are not guaranteed.
 
 **User Input Examples:**
 - "把 `./face.jpg` 的人脸换到 `./target.jpg` 上"

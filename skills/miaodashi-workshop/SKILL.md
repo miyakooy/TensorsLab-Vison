@@ -7,6 +7,8 @@ description: Plan, approve, run, and review a TensorsLab visual-production workf
 
 Turn a product or campaign brief into a local, resumable production run. This skill owns planning, approvals, task records and QA. It deliberately reuses the existing `tl-image` and `tl-video` API clients instead of adding a second generation client.
 
+This repository implements the local records and command preparation. It does not yet include a batch executor, browser interface, collaboration service, masking editor, deterministic typography renderer, or automatic publishing integration. `prepare_dispatch.py` creates commands for review; a user or agent runs each approved command explicitly.
+
 ## Workflow
 
 1. **掌柜 — understand.** Identify the scenario, channel, target deliverables, asset roles and non-negotiable constraints.

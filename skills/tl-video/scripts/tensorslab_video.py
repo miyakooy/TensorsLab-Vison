@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import argparse
+import json
 import logging
 from contextlib import contextmanager
 from pathlib import Path
@@ -68,6 +69,83 @@ POLL_BACKOFF_FACTOR = 1.3
 HEARTBEAT_INTERVAL = 60
 
 
+def validate_inputs(
+    *,
+    prompt: str,
+    model: str,
+    ratio: str,
+    duration: int,
+    resolution: str,
+    source_images: Optional[List[str]],
+    image_url: Optional[str],
+    generate_audio: bool,
+    return_last_frame: bool,
+    timeout: int = 1800,
+) -> None:
+    """Reject unsupported model and parameter combinations before billing."""
+    if not prompt.strip():
+        raise TensorsLabAPIError("Prompt must not be empty")
+    if model not in MODEL_ENDPOINTS:
+        raise TensorsLabAPIError(f"Unsupported video model: {model}")
+    if not ratio.strip():
+        raise TensorsLabAPIError("Ratio must not be empty")
+    max_duration = MODEL_MAX_DURATION[model]
+    if duration < 5 or duration > max_duration:
+        raise TensorsLabAPIError(
+            f"Duration must be between 5 and {max_duration} seconds for {model}"
+        )
+    if resolution == "1440p" and model != "seedancev2":
+        raise TensorsLabAPIError("1440p is documented only for seedancev2")
+    if (generate_audio or return_last_frame) and model != "seedancev2":
+        raise TensorsLabAPIError("Audio and last-frame output are available only on seedancev2")
+    if source_images and image_url:
+        raise TensorsLabAPIError("Use local --source files or --image-url, not both")
+    if source_images and len(source_images) > 2:
+        raise TensorsLabAPIError("A video task accepts at most two source images")
+    for value in source_images or []:
+        if not Path(value).expanduser().is_file():
+            raise TensorsLabAPIError(f"Source image does not exist: {value}")
+    if image_url:
+        parsed = urlparse(image_url)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise TensorsLabAPIError("--image-url must be an http or https URL")
+    if timeout < 1:
+        raise TensorsLabAPIError("Timeout must be at least 1 second")
+
+
+def request_preview(
+    *,
+    prompt: str,
+    model: str,
+    ratio: str,
+    duration: int,
+    resolution: str,
+    fps: str,
+    source_images: Optional[List[str]],
+    image_url: Optional[str],
+    generate_audio: bool,
+    return_last_frame: bool,
+    seed: Optional[int],
+) -> dict:
+    """Return a credential-free preview for documentation and preflight checks."""
+    return {
+        "method": "POST",
+        "endpoint": MODEL_ENDPOINTS[model],
+        "model": model,
+        "prompt": prompt,
+        "ratio": ratio,
+        "duration": duration,
+        "resolution": resolution,
+        "fps": fps,
+        "source_images": list(source_images or []),
+        "image_url": image_url,
+        "generate_audio": generate_audio,
+        "return_last_frame": return_last_frame,
+        "seed": seed,
+        "submits_request": False,
+    }
+
+
 def _create_session() -> requests.Session:
     """Create a requests session with proxy disabled."""
     session = requests.Session()
@@ -105,8 +183,9 @@ def open_source_images(paths: Optional[List[str]]):
     handles = []
     try:
         for path in paths or []:
-            f = open(path, "rb")
-            handles.append((os.path.basename(path), f))
+            expanded = Path(path).expanduser()
+            f = expanded.open("rb")
+            handles.append((expanded.name, f))
         yield handles
     finally:
         for _, f in handles:
@@ -161,6 +240,17 @@ def generate_video(
     Returns:
         Task ID for tracking generation status.
     """
+    validate_inputs(
+        prompt=prompt,
+        model=model,
+        ratio=ratio,
+        duration=duration,
+        resolution=resolution,
+        source_images=source_images,
+        image_url=image_url,
+        generate_audio=generate_audio,
+        return_last_frame=return_last_frame,
+    )
     if api_key is None:
         api_key = get_api_key()
 
@@ -209,6 +299,8 @@ def generate_video(
 
     if result.get("code") == 1000:
         task_id = result.get("data", {}).get("taskid")
+        if not task_id:
+            raise TensorsLabAPIError("API reported success but returned no task ID")
         logger.info(f"✅ Task created successfully! Task ID: {task_id}")
         return task_id
 
@@ -378,6 +470,10 @@ Examples:
         help="Output directory path (default: ./tensorslab_output)",
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Validate inputs and print the request plan without using an API key",
+    )
 
     args = parser.parse_args()
 
@@ -388,20 +484,34 @@ Examples:
 
     output_dir = Path(args.output_dir) if args.output_dir else DEFAULT_OUTPUT_DIR
 
-    # Validate duration
-    max_duration = MODEL_MAX_DURATION.get(args.model, 10)
-    if args.duration < 5 or args.duration > max_duration:
-        logger.error(
-            f"❌ Error: duration must be between 5 and {max_duration} seconds for {args.model}"
-        )
-        sys.exit(1)
-
-    # Validate source images count
-    if args.sources and len(args.sources) > 2:
-        logger.error("❌ Error: maximum 2 source images allowed")
-        sys.exit(1)
-
     try:
+        validate_inputs(
+            prompt=args.prompt,
+            model=args.model,
+            ratio=args.ratio,
+            duration=args.duration,
+            resolution=args.resolution,
+            source_images=args.sources,
+            image_url=args.image_url,
+            generate_audio=args.audio,
+            return_last_frame=args.last_frame,
+            timeout=args.timeout,
+        )
+        if args.dry_run:
+            print(json.dumps(request_preview(
+                prompt=args.prompt,
+                model=args.model,
+                ratio=args.ratio,
+                duration=args.duration,
+                resolution=args.resolution,
+                fps=args.fps,
+                source_images=args.sources,
+                image_url=args.image_url,
+                generate_audio=args.audio,
+                return_last_frame=args.last_frame,
+                seed=args.seed,
+            ), ensure_ascii=False, indent=2))
+            return
         task_id = generate_video(
             prompt=args.prompt,
             model=args.model,

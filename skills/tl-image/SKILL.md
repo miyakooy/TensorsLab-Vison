@@ -1,13 +1,13 @@
 ---
 name: tensorslab-image
-description: "Generate and edit images using TensorsLab's AI models. Supports text-to-image, image-to-image generation, plus advanced editing: avatar generation, watermark removal, object erasure, face replacement, and general image editing. Features automatic prompt enhancement, progress tracking, and local file saving. Requires TENSORSLAB_API_KEY environment variable."
+description: "Generate images with TensorsLab SeeDream or Z-Image APIs, transform source images with prompt-driven image-to-image generation, preview request parameters, poll task status, and save returned files locally. Use for text-to-image, image-to-image, product imagery, avatars, or best-effort generative edits. Exact masking, deterministic object removal, and guaranteed identity replacement are not provided. Live generation requires TENSORSLAB_API_KEY."
 ---
 
 # TensorsLab Image Generation
 
 ## Overview
 
-This skill enables AI-powered image generation through TensorsLab's API, supporting both text-to-image and image-to-image workflows. The agent enhances user prompts with detailed visual descriptions before calling the API, ensuring high-quality outputs.
+This skill provides an executable TensorsLab API client for text-to-image and image-to-image workflows. Prompt enhancement is performed by the calling agent, not by a separate endpoint in this script. Use `--dry-run` to validate and inspect the request before a paid call.
 
 ## Authentication Check
 
@@ -41,7 +41,7 @@ Default: `seedreamv4`
 
 ## Workflow
 
-For additional scenarios beyond basic generation (avatar generation, watermark removal, object erasure, face replacement), see [references/scenarios.md](references/scenarios.md).
+For prompt patterns beyond basic generation, see [references/scenarios.md](references/scenarios.md). Those edits are generative best-effort uses of the same image-to-image endpoint; they are not dedicated masking or face-swap APIs.
 
 ### 1. Text-to-Image Generation
 
@@ -76,9 +76,9 @@ User request: "把 cat.png 的背景换成太空" or "参考 sketch.png 渲染�
 - `imageUrl`: URL of source image
 - `prompt`: Description of desired transformation
 
-### 3. Image Editing (General Purpose)
+### 3. Prompt-driven Image Editing (Best Effort)
 
-General-purpose editing for any local image modifications.
+General-purpose generative transformation for local images. Always review product facts, identity, edges, text and logos in the result. Use a masking or post-production tool when exact pixels or deterministic placement matter.
 
 **User request examples:**
 - "把这张图的天空改成日落色"
@@ -120,6 +120,9 @@ Supported formats:
 Execute the Python script directly:
 
 ```bash
+# Validate and preview without an API key or paid request
+python scripts/tensorslab_image.py "a cat on the moon" --dry-run
+
 # Text-to-image
 python scripts/tensorslab_image.py "a cat on the moon"
 
@@ -131,6 +134,12 @@ python scripts/tensorslab_image.py "watercolor style" --source cat.png
 
 # Specify model
 python scripts/tensorslab_image.py "cyberpunk city" --model seedreamv45
+
+# Generate a batch with SeeDream
+python scripts/tensorslab_image.py "three product lighting variants" --model seedreamv45 --batch-size 3
+
+# Reproducible Z-Image request
+python scripts/tensorslab_image.py "ink illustration" --model zimage --seed 42
 
 # Custom output directory
 python scripts/tensorslab_image.py "a beautiful landscape" --output-dir ./my_images
@@ -151,7 +160,7 @@ Translate API errors to user-friendly messages:
 
 | Error Code | Meaning | User Message |
 |------------|---------|--------------|
-| 9000 | Insufficient credits | "亲，积分用完啦，请前往 https://tensorai.tensorslab.com"/ 充值" |
+| 9000 | Insufficient credits | "亲，积分用完啦，请前往 https://tensorai.tensorslab.com/ 充值" |
 | 9999 | General error | Show the specific error message |
 
 ## Output
@@ -171,4 +180,3 @@ After completion, inform user:
 - **scripts/tensorslab_image.py**: Main API client with full CLI support
 - **references/api_reference.md**: Detailed API documentation
 - **references/scenarios.md**: Advanced usage scenarios (avatar generation, watermark removal, object erasure, face replacement)
-

@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import argparse
+import json
 import logging
 import mimetypes
 from contextlib import contextmanager
@@ -58,6 +59,71 @@ POLL_MAX_INTERVAL = 15
 POLL_BACKOFF_FACTOR = 1.5
 
 
+def validate_inputs(
+    *,
+    prompt: str,
+    model: str,
+    resolution: str,
+    batch_size: int,
+    seed: Optional[int],
+    source_images: Optional[List[str]],
+    image_url: Optional[str],
+    poll_interval: int = POLL_INITIAL_INTERVAL,
+    timeout: int = 300,
+) -> None:
+    """Reject combinations that the documented API cannot execute."""
+    if not prompt.strip():
+        raise TensorsLabAPIError("Prompt must not be empty")
+    if model not in MODEL_ENDPOINTS:
+        raise TensorsLabAPIError(f"Unsupported image model: {model}")
+    if not resolution.strip():
+        raise TensorsLabAPIError("Resolution must not be empty")
+    if batch_size < 1 or batch_size > 15:
+        raise TensorsLabAPIError("Batch size must be between 1 and 15")
+    if model == "zimage" and batch_size != 1:
+        raise TensorsLabAPIError("zimage does not expose batchsize; use --batch-size 1")
+    if seed is not None and model != "zimage":
+        raise TensorsLabAPIError("--seed is documented only for zimage")
+    if source_images and image_url:
+        raise TensorsLabAPIError("Use local --source files or --image-url, not both")
+    for value in source_images or []:
+        if not Path(value).expanduser().is_file():
+            raise TensorsLabAPIError(f"Source image does not exist: {value}")
+    if image_url:
+        parsed = urlparse(image_url)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise TensorsLabAPIError("--image-url must be an http or https URL")
+    if poll_interval < 1:
+        raise TensorsLabAPIError("Poll interval must be at least 1 second")
+    if timeout < 1:
+        raise TensorsLabAPIError("Timeout must be at least 1 second")
+
+
+def request_preview(
+    *,
+    prompt: str,
+    model: str,
+    resolution: str,
+    batch_size: int,
+    seed: Optional[int],
+    source_images: Optional[List[str]],
+    image_url: Optional[str],
+) -> dict:
+    """Return a credential-free preview for documentation and preflight checks."""
+    return {
+        "method": "POST",
+        "endpoint": MODEL_ENDPOINTS[model],
+        "model": model,
+        "prompt": prompt,
+        "resolution": resolution,
+        "batch_size": batch_size,
+        "seed": seed,
+        "source_images": list(source_images or []),
+        "image_url": image_url,
+        "submits_request": False,
+    }
+
+
 def _create_session() -> requests.Session:
     """Create a requests session with proxy disabled."""
     session = requests.Session()
@@ -95,8 +161,9 @@ def open_source_images(paths: Optional[List[str]]):
     handles = []
     try:
         for path in paths or []:
-            f = open(path, "rb")
-            handles.append((os.path.basename(path), f))
+            expanded = Path(path).expanduser()
+            f = expanded.open("rb")
+            handles.append((expanded.name, f))
         yield handles
     finally:
         for _, f in handles:
@@ -130,6 +197,8 @@ def generate_image(
     prompt: str,
     model: str = "seedreamv4",
     resolution: str = "2K",
+    batch_size: int = 1,
+    seed: Optional[int] = None,
     source_images: Optional[List[str]] = None,
     image_url: Optional[str] = None,
     api_key: Optional[str] = None,
@@ -140,6 +209,15 @@ def generate_image(
     Returns:
         Task ID for tracking generation status.
     """
+    validate_inputs(
+        prompt=prompt,
+        model=model,
+        resolution=resolution,
+        batch_size=batch_size,
+        seed=seed,
+        source_images=source_images,
+        image_url=image_url,
+    )
     if api_key is None:
         api_key = get_api_key()
 
@@ -152,8 +230,11 @@ def generate_image(
 
     if model in ("seedreamv4", "seedreamv45"):
         files.append(("category", (None, model)))
+        files.append(("batchsize", (None, str(batch_size))))
     elif model == "zimage":
         files.append(("prompt_extend", (None, "1")))
+        if seed is not None:
+            files.append(("seed", (None, str(seed))))
 
     endpoint = MODEL_ENDPOINTS.get(model, MODEL_ENDPOINTS["seedreamv45"])
 
@@ -182,6 +263,8 @@ def generate_image(
 
     if result.get("code") == 1000:
         task_id = result.get("data", {}).get("taskid")
+        if not task_id:
+            raise TensorsLabAPIError("API reported success but returned no task ID")
         logger.info(f"✅ Task created successfully! Task ID: {task_id}")
         return task_id
 
@@ -225,6 +308,7 @@ def wait_and_download(
     api_key: Optional[str] = None,
     timeout: int = 300,
     output_dir: Optional[Path] = None,
+    initial_interval: int = POLL_INITIAL_INTERVAL,
 ) -> List[str]:
     """Wait for task completion with exponential back-off, then download results."""
     if api_key is None:
@@ -235,7 +319,7 @@ def wait_and_download(
     ensure_output_dir(output_dir)
     downloaded_files: List[str] = []
     start_time = time.time()
-    interval = POLL_INITIAL_INTERVAL
+    interval = initial_interval
 
     logger.info("⏳ Waiting for image generation to complete...")
 
@@ -298,8 +382,16 @@ Examples:
     )
     parser.add_argument(
         "--resolution", "-r",
-        default="2K",
+        default=None,
         help="Resolution: aspect ratio (9:16, 16:9, 1:1, etc.), level (2K, 4K), or WxH",
+    )
+    parser.add_argument(
+        "--batch-size", type=int, default=1,
+        help="Number of images for SeeDream models (1-15, default: 1)",
+    )
+    parser.add_argument(
+        "--seed", type=int,
+        help="Random seed (zimage only)",
     )
     parser.add_argument(
         "--source", "-s",
@@ -328,6 +420,10 @@ Examples:
         help="Output directory path (default: ./tensorslab_output)",
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Validate inputs and print the request plan without using an API key",
+    )
 
     args = parser.parse_args()
 
@@ -337,12 +433,37 @@ Examples:
     )
 
     output_dir = Path(args.output_dir) if args.output_dir else DEFAULT_OUTPUT_DIR
+    resolution = args.resolution or ("1024*1024" if args.model == "zimage" else "2K")
 
     try:
+        validate_inputs(
+            prompt=args.prompt,
+            model=args.model,
+            resolution=resolution,
+            batch_size=args.batch_size,
+            seed=args.seed,
+            source_images=args.sources,
+            image_url=args.image_url,
+            poll_interval=args.poll_interval,
+            timeout=args.timeout,
+        )
+        if args.dry_run:
+            print(json.dumps(request_preview(
+                prompt=args.prompt,
+                model=args.model,
+                resolution=resolution,
+                batch_size=args.batch_size,
+                seed=args.seed,
+                source_images=args.sources,
+                image_url=args.image_url,
+            ), ensure_ascii=False, indent=2))
+            return
         task_id = generate_image(
             prompt=args.prompt,
             model=args.model,
-            resolution=args.resolution,
+            resolution=resolution,
+            batch_size=args.batch_size,
+            seed=args.seed,
             source_images=args.sources,
             image_url=args.image_url,
             api_key=args.api_key,
@@ -353,6 +474,7 @@ Examples:
             api_key=args.api_key,
             timeout=args.timeout,
             output_dir=output_dir,
+            initial_interval=args.poll_interval,
         )
 
         logger.info(f"\n🎉 All done! Downloaded {len(downloaded)} image(s) to {output_dir}/")

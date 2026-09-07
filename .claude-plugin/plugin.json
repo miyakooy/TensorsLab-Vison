@@ -1,7 +1,7 @@
 {
   "name": "tensorslab-skills",
-  "description": "TensorsLab image and video API skills, plus Miaodashi Visual Workshop workflows for ecommerce and campaign creative production.",
-  "version": "1.2.0",
+  "description": "Executable TensorsLab image and video API skills, plus a local review-first planner for ecommerce and campaign production.",
+  "version": "1.3.0",
   "author": {
     "name": "TensorsLab"
   },

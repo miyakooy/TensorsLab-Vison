@@ -7,7 +7,7 @@ description: Generate videos using TensorsLab's AI video generation models. Supp
 
 ## Overview
 
-This skill enables AI-powered video generation through TensorsLab's API, supporting both text-to-video and image-to-video workflows. Video generation is a time-intensive process - tasks typically take several minutes to complete.
+This skill provides an executable TensorsLab API client for text-to-video and image-to-video workflows. The calling agent writes the final prompt. Use `--dry-run` to validate model-specific parameters and inspect the request before a paid call. Video generation is asynchronous and can take several minutes.
 
 ## Authentication Check
 
@@ -127,6 +127,9 @@ Video generation takes **several minutes**. Keep users informed:
 Execute the Python script directly:
 
 ```bash
+# Validate and preview without an API key or paid request
+python scripts/tensorslab_video.py "a spaceship flying through space" --dry-run
+
 # Text-to-video (default 5s, vertical 9:16)
 python scripts/tensorslab_video.py "a spaceship flying through space"
 

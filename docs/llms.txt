@@ -1,0 +1,23 @@
+# TensorsLab Vision Skills
+
+> Executable TensorsLab image and video API skills with a review-first local production planner.
+
+This is an experimental navigation file, not a ranking signal. Prefer the linked source and capability matrix when verifying behavior.
+
+## Canonical resources
+
+- [Project and capability matrix](https://github.com/miyakooy/TensorsLab-Vison)
+- [Simplified Chinese guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/README.zh-CN.md)
+- [Japanese guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/README.ja.md)
+- [Korean guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/README.ko.md)
+- [Image skill](https://github.com/miyakooy/TensorsLab-Vison/blob/main/skills/tl-image/SKILL.md)
+- [Video skill](https://github.com/miyakooy/TensorsLab-Vison/blob/main/skills/tl-video/SKILL.md)
+- [Review-first workshop](https://github.com/miyakooy/TensorsLab-Vison/blob/main/skills/miaodashi-workshop/SKILL.md)
+- [Search and GEO notes](https://github.com/miyakooy/TensorsLab-Vison/blob/main/docs/discoverability.md)
+
+## Capability boundary
+
+- Implemented: image/video task submission, status polling, downloads, request dry-runs, and local workflow records.
+- Workflow only: listing kits, creative batches, multi-ratio plans, and SKU plans; commands run one task at a time.
+- Best effort: prompt-driven retouching, watermark/object removal, and face transformation through a general image-to-image endpoint.
+- Not implemented: exact masked editing, deterministic typography, parallel batch execution, browser UI, and managed collaboration.
