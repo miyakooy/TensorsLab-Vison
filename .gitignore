@@ -4,6 +4,8 @@ __pycache__/
 *.skill
 *.jpg
 *.png
+!docs/assets/showcase/
+!docs/assets/showcase/*.png
 *.mp4
 *.webm
 *.zip

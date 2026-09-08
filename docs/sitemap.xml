@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://miyakooy.github.io/TensorsLab-Vison/</loc>
     <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://miyakooy.github.io/TensorsLab-Vison/" />
@@ -8,6 +9,10 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://miyakooy.github.io/TensorsLab-Vison/ja/" />
     <xhtml:link rel="alternate" hreflang="ko" href="https://miyakooy.github.io/TensorsLab-Vison/ko/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://miyakooy.github.io/TensorsLab-Vison/" />
+    <image:image><image:loc>https://miyakooy.github.io/TensorsLab-Vison/assets/showcase/ai-poster-design.png</image:loc><image:title>AI Poster Design</image:title><image:caption>Campaign poster visual reference for TensorsLab Vision.</image:caption></image:image>
+    <image:image><image:loc>https://miyakooy.github.io/TensorsLab-Vison/assets/showcase/ai-scene-composition.png</image:loc><image:title>AI Scene Composition</image:title><image:caption>Scene composition visual reference for TensorsLab Vision.</image:caption></image:image>
+    <image:image><image:loc>https://miyakooy.github.io/TensorsLab-Vison/assets/showcase/ai-ecommerce-main-image.png</image:loc><image:title>AI Ecommerce Hero</image:title><image:caption>Ecommerce hero-image visual reference for TensorsLab Vision.</image:caption></image:image>
+    <image:image><image:loc>https://miyakooy.github.io/TensorsLab-Vison/assets/showcase/ai-ecommerce-product-set.png</image:loc><image:title>Ecommerce Product Set</image:title><image:caption>Ecommerce product-set visual reference for TensorsLab Vision.</image:caption></image:image>
     <lastmod>2026-09-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>

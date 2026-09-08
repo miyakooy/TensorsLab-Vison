@@ -86,6 +86,21 @@ class DocumentationTests(unittest.TestCase):
         locations = [item.text for item in root.findall("{*}url/{*}loc")]
         self.assertEqual(set(locations), set(PAGE_URLS.values()))
 
+    def test_showcase_assets_are_local_and_indexable(self) -> None:
+        assets = [
+            "ai-poster-design.png",
+            "ai-scene-composition.png",
+            "ai-ecommerce-main-image.png",
+            "ai-ecommerce-product-set.png",
+        ]
+        sitemap = (ROOT / "docs/sitemap.xml").read_text(encoding="utf-8")
+        for asset in assets:
+            self.assertTrue((ROOT / "docs/assets/showcase" / asset).is_file(), asset)
+            self.assertIn(f"assets/showcase/{asset}", sitemap)
+        for page in PAGE_URLS:
+            html = page.read_text(encoding="utf-8")
+            self.assertIn("assets/showcase/ai-ecommerce-main-image.png", html)
+
     def test_localized_pages_have_reciprocal_hreflang(self) -> None:
         for page, canonical_url in PAGE_URLS.items():
             html = page.read_text(encoding="utf-8")

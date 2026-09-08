@@ -21,7 +21,7 @@
     <meta property="og:description" content="可执行的 TensorsLab 图像与视频 API Skill，以及先确认再生成的本地视觉生产工作流。" />
     <meta property="og:url" content="https://miyakooy.github.io/TensorsLab-Vison/" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:image" content="https://miaodashi.com/cap-short-video.jpg" />
+    <meta property="og:image" content="https://miyakooy.github.io/TensorsLab-Vison/assets/showcase/ai-ecommerce-main-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json">
       {
@@ -307,6 +307,13 @@
       .workflow-card p { margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.75; }
 
       .showcase-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+      .cover-reference-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+      .cover-reference { position: relative; min-height: 282px; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: var(--paper-deep); }
+      .cover-reference img { width: 100%; height: 100%; min-height: 282px; object-fit: cover; transition: transform 400ms cubic-bezier(.2,.8,.2,1); }
+      .cover-reference:hover img { transform: scale(1.035); }
+      .cover-reference-label { position: absolute; right: 12px; bottom: 12px; left: 12px; padding: 10px 11px; color: var(--paper); background: rgba(16, 45, 42, .9); font-family: "DM Mono", monospace; font-size: 10px; letter-spacing: .05em; }
+      .cover-reference-label small { display: block; margin-top: 4px; color: rgba(244,240,231,.78); font-family: "Noto Sans SC", sans-serif; font-size: 11px; letter-spacing: 0; }
+      .cover-reference-note { margin: 16px 0 0; color: var(--ink-soft); font-size: 13px; line-height: 1.75; }
       .showcase-card { grid-column: span 6; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: rgba(255, 253, 248, 0.72); transition: transform 180ms ease, box-shadow 180ms ease; }
       .showcase-card:nth-child(1), .showcase-card:nth-child(4) { grid-column: span 7; }
       .showcase-card:nth-child(2), .showcase-card:nth-child(3) { grid-column: span 5; }
@@ -344,6 +351,7 @@
       @media (max-width: 1000px) {
         .endpoint-grid, .workflow-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .showcase-card, .showcase-card:nth-child(n) { grid-column: span 6; }
+        .cover-reference-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .hero { grid-template-columns: 1fr; min-height: 0; }
         .hero-visual { max-width: 620px; width: 100%; }
       }
@@ -365,6 +373,7 @@
         .endpoint-grid, .workflow-grid, .production { grid-template-columns: 1fr; }
         .showcase-grid { grid-template-columns: 1fr; }
         .showcase-card, .showcase-card:nth-child(n) { grid-column: auto; }
+        .cover-reference-grid { grid-template-columns: 1fr; }
         .inspector { grid-template-columns: 1fr; gap: 11px; }
         .inspector .copy { justify-self: start; }
         .role { grid-template-columns: 25px 82px 1fr; gap: 7px; }
@@ -440,6 +449,20 @@
             <button class="tab" data-filter="video">视频</button>
           </div>
           <div class="workflow-grid" id="workflow-grid"></div>
+        </section>
+
+        <section class="section" aria-labelledby="cover-reference-title">
+          <div class="section-head">
+            <div><div class="eyebrow">Local cover references</div><h2 id="cover-reference-title">海报、场景与商品主图，<em>先把方向看清。</em></h2></div>
+            <p class="section-note">四张已授权封面直接随仓库发布：GitHub、GitHub Pages 与搜索引擎可以稳定抓取，不再依赖第三方图片地址。</p>
+          </div>
+          <div class="cover-reference-grid">
+            <article class="cover-reference"><img src="assets/showcase/ai-poster-design.png" alt="AI 海报设计中文宣传封面" loading="lazy" /><div class="cover-reference-label">AI 海报设计<small>活动宣传 · 品牌推广 · 节日视觉</small></div></article>
+            <article class="cover-reference"><img src="assets/showcase/ai-scene-composition.png" alt="AI 场景合成中文宣传封面" loading="lazy" /><div class="cover-reference-label">AI 场景合成<small>家居 · 商业空间 · 梦幻氛围</small></div></article>
+            <article class="cover-reference"><img src="assets/showcase/ai-ecommerce-main-image.png" alt="AI 电商主图中文宣传封面" loading="lazy" /><div class="cover-reference-label">AI 电商主图<small>产品渲染 · 场景搭建 · 质感提升</small></div></article>
+            <article class="cover-reference"><img src="assets/showcase/ai-ecommerce-product-set.png" alt="AI 电商商品组图中文宣传封面" loading="lazy" /><div class="cover-reference-label">电商商品组图<small>美妆 · 饰品 · 数码 · 家居</small></div></article>
+          </div>
+          <p class="cover-reference-note">中文版本保留原始设计文案；英文、日文、韩文页面为每张封面提供当地语言的标题、说明、替代文本与分享元数据。</p>
         </section>
 
         <section id="showcase" class="section" aria-labelledby="showcase-title">
