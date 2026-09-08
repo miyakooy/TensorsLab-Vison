@@ -154,5 +154,3 @@ The tests make no paid API calls. To verify live generation, run one low-cost re
 - [Community showcase](examples/README.md) · [Contributing](CONTRIBUTING.md)
 - [GEO / search discoverability notes](docs/discoverability.md)
 - [English GitHub Pages showcase](https://miyakooy.github.io/TensorsLab-Vison/en/)
-
-GitHub Pages must first be enabled under **Settings → Pages → Source: GitHub Actions**. The workflow cannot create that repository setting by itself.
