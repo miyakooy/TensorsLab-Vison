@@ -50,6 +50,7 @@ IMAGE_STATUS = {
 MODEL_ENDPOINTS = {
     "seedreamv4": f"{BASE_URL}/v1/images/seedreamv4",
     "seedreamv45": f"{BASE_URL}/v1/images/seedreamv45",
+    "seedreamv5": f"{BASE_URL}/v1/images/seedreamv5",
     "zimage": f"{BASE_URL}/v1/images/zimage",
 }
 
@@ -228,7 +229,7 @@ def generate_image(
         ("resolution", (None, resolution)),
     ]
 
-    if model in ("seedreamv4", "seedreamv45"):
+    if model in ("seedreamv4", "seedreamv45", "seedreamv5"):
         files.append(("category", (None, model)))
         files.append(("batchsize", (None, str(batch_size))))
     elif model == "zimage":

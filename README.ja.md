@@ -23,7 +23,7 @@
 
 | 機能 | 状態 | 境界 |
 | --- | --- | --- |
-| Text-to-Image / Image-to-Image | **実装済み** | SeeDream V4/V4.5 と Z-Image API を呼び出します。 |
+| Text-to-Image / Image-to-Image | **実装済み** | SeeDream V4/V4.5/V5 Lite と Z-Image API を呼び出します。 |
 | Text-to-Video / Image-to-Video | **実装済み** | 4 種類の SeeDance API を呼び出します。 |
 | 状態確認とローカル保存 | **実装済み** | 非同期タスクをポーリングして結果を保存します。 |
 | API を呼ばないプレビュー | **実装済み** | `--dry-run` は API Key もクレジットも使用しません。 |
@@ -34,6 +34,10 @@
 | ブラウザ UI とチームレビュー | **本リポジトリ外** | 必要な場合は Miaodashi を利用してください。 |
 
 公開 CI では秘密鍵とクレジットが必要な実生成を行いません。CLI とローカルワークフローはオフラインテストで検証します。
+
+### 画像モデルの提供状況
+
+`seedreamv5` はこのリポジトリで実行でき、`POST /v1/images/seedreamv5` に対応します。TensorAI 製品側には GPT Image 2 と GPT Image 2.5 系列もありますが、TensorsLab のエンドポイント名とリクエスト仕様は公式 API インデックスに未掲載です。検証できる契約が届くまで CLI の選択肢には入れず、「製品で利用可能」と「オープンソースで実行可能」を明確に分けます。
 
 ## インストール
 
@@ -75,6 +79,14 @@ python skills/tl-image/scripts/tensorslab_image.py \
 python skills/tl-image/scripts/tensorslab_image.py \
   "白い陶器カップの商品写真、形状と色を保持" \
   --model seedreamv45 --resolution 4:5
+```
+
+SeeDream V5 Lite で商品画像を生成または変換する例：
+
+```bash
+python skills/tl-image/scripts/tensorslab_image.py \
+  "高品質な商品ヒーロー画像。商品の形状とラベルを維持する" \
+  --model seedreamv5 --source ./product.jpg --resolution 2K
 ```
 
 動画：

@@ -132,6 +132,16 @@ class DocumentationTests(unittest.TestCase):
         self.assertIn("BEST EFFORT", html)
         self.assertIn("不是专用 faceswap", html)
 
+    def test_seedream_v5_is_documented_as_an_executable_model(self) -> None:
+        image_skill = (ROOT / "skills/tl-image/SKILL.md").read_text(encoding="utf-8")
+        client = (ROOT / "skills/tl-image/scripts/tensorslab_image.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("seedreamv5", image_skill)
+        self.assertIn('/v1/images/seedreamv5', client)
+        for name in ("README.md", "README.zh-CN.md", "README.ja.md", "README.ko.md"):
+            self.assertIn("seedreamv5", (ROOT / name).read_text(encoding="utf-8"))
+
     def test_marketplace_sources_are_installable_skill_folders(self) -> None:
         marketplace = json.loads(
             (ROOT / ".claude-plugin/marketplace.json").read_text(encoding="utf-8")

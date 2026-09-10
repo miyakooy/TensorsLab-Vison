@@ -33,7 +33,8 @@ If not set, display this friendly message:
 
 | Model | Description | Best For |
 |-------|-------------|----------|
-| **seedreamv45** | Latest enhanced model | General purpose, highest quality |
+| **seedreamv5** | SeeDream V5 Lite | New-generation text-to-image and image-to-image; supports 1–15 variants |
+| **seedreamv45** | Enhanced model | General purpose, high quality |
 | **seedreamv4** | Standard model | Fast generation, good quality |
 | **zimage** | Alternative model | Specific artistic styles |
 
@@ -134,6 +135,9 @@ python scripts/tensorslab_image.py "watercolor style" --source cat.png
 
 # Specify model
 python scripts/tensorslab_image.py "cyberpunk city" --model seedreamv45
+
+# SeeDream V5 Lite, with an optional source image
+python scripts/tensorslab_image.py "premium ecommerce product visual" --model seedreamv5 --source product.jpg --resolution 2K
 
 # Generate a batch with SeeDream
 python scripts/tensorslab_image.py "three product lighting variants" --model seedreamv45 --batch-size 3

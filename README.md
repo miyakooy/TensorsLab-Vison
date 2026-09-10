@@ -27,7 +27,7 @@ The no-code product at [miaodashi.com](https://miaodashi.com) is optional. The o
 
 | Capability | Status | Evidence / boundary |
 | --- | --- | --- |
-| Text-to-image and image-to-image | **Implemented** | `tensorslab_image.py` calls the documented SeeDream V4/V4.5 and Z-Image endpoints. |
+| Text-to-image and image-to-image | **Implemented** | `tensorslab_image.py` calls the documented SeeDream V4/V4.5/V5 Lite and Z-Image endpoints. |
 | Text-to-video and image-to-video | **Implemented** | `tensorslab_video.py` calls four documented SeeDance endpoints. |
 | Task polling and local download | **Implemented** | Both clients poll task status and save returned URLs locally. |
 | Credential-free request preview | **Implemented** | Both clients support `--dry-run`; no API key or paid request is used. |
@@ -39,6 +39,10 @@ The no-code product at [miaodashi.com](https://miaodashi.com) is optional. The o
 | Browser UI, team review, managed batch delivery | **Not in this repository** | Use [Miaodashi](https://miaodashi.com) if that product workflow is required. |
 
 > Verification level: the repository has offline smoke tests for CLI validation and the complete local workshop lifecycle. Live generation is not run in public CI because it needs a private API key and consumes credits.
+
+### Image model availability
+
+`seedreamv5` is executable in this repository and maps to `POST /v1/images/seedreamv5`. The TensorAI product catalog also contains GPT Image 2 and GPT Image 2.5 families. Their TensorsLab endpoint names and request schemas are not yet published in the official API index, so they are deliberately not exposed as CLI options until the contract can be verified. This keeps a listed platform model separate from an executable open-source integration.
 
 ## Install
 
@@ -86,6 +90,14 @@ Generate an image:
 python skills/tl-image/scripts/tensorslab_image.py \
   "studio product photo of a ceramic cup" \
   --model seedreamv45 --resolution 4:5
+```
+
+Generate or transform a product image with SeeDream V5 Lite:
+
+```bash
+python skills/tl-image/scripts/tensorslab_image.py \
+  "premium product hero image; preserve the product shape and label" \
+  --model seedreamv5 --source ./product.jpg --resolution 2K
 ```
 
 Animate a local image:

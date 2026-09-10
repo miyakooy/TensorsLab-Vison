@@ -23,7 +23,7 @@
 
 | 能力 | 状态 | 实现边界 |
 | --- | --- | --- |
-| 文生图、图生图 | **已实现** | Python 客户端调用 SeeDream V4/V4.5 与 Z-Image 接口。 |
+| 文生图、图生图 | **已实现** | Python 客户端调用 SeeDream V4/V4.5/V5 Lite 与 Z-Image 接口。 |
 | 文生视频、图生视频 | **已实现** | Python 客户端调用四个 SeeDance 接口。 |
 | 任务轮询和本地下载 | **已实现** | 查询异步任务状态并保存返回文件。 |
 | 不消耗积分的请求预览 | **已实现** | 两个客户端都支持 `--dry-run`，不需要 API Key。 |
@@ -35,6 +35,10 @@
 | 浏览器 UI、团队审核、托管交付 | **不在本仓库** | 需要这类产品能力时再使用 Miaodashi。 |
 
 > 验证说明：仓库包含 CLI 参数和完整本地工作流的离线测试。公开 CI 不执行真实生成，因为它需要私有 API Key 并会消耗积分。
+
+### 图像模型可用性
+
+`seedreamv5` 已在仓库中可执行，对应 `POST /v1/images/seedreamv5`。TensorAI 产品侧目前也有 GPT Image 2 与 GPT Image 2.5 系列；但其 TensorsLab 接口名称和请求字段尚未出现在官方 API 索引中，因此暂不伪装成可运行的 CLI 选项。拿到可验证的接口契约后即可接入，确保“平台有模型”与“开源仓库可执行”两件事保持清晰。
 
 ## 安装
 
@@ -82,6 +86,14 @@ python skills/tl-image/scripts/tensorslab_image.py \
 python skills/tl-image/scripts/tensorslab_image.py \
   "白色陶瓷杯，暖色棚拍光线，保持杯身结构准确" \
   --model seedreamv45 --resolution 4:5
+```
+
+使用 SeeDream V5 Lite 生成或变换商品图：
+
+```bash
+python skills/tl-image/scripts/tensorslab_image.py \
+  "高品质商品主图；保持商品外形与标签准确" \
+  --model seedreamv5 --source ./product.jpg --resolution 2K
 ```
 
 让本地图片生成视频：

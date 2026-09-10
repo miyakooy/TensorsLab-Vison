@@ -91,6 +91,22 @@ class ClientSmokeTests(unittest.TestCase):
         self.assertEqual(payload["endpoint"], "https://api.tensorslab.com/v1/images/seedreamv45")
         self.assertFalse(payload["submits_request"])
 
+    def test_seedream_v5_uses_its_documented_endpoint(self) -> None:
+        module = load_module("tensorslab_image_v5_test", IMAGE_CLIENT)
+        fake = FakeSession()
+        module._SESSION = fake
+        module.generate_image(
+            "premium product hero",
+            model="seedreamv5",
+            resolution="2K",
+            batch_size=2,
+            api_key="test-key",
+        )
+        fields = {name: value[1] for name, value in fake.calls[0]["files"]}
+        self.assertEqual(fake.calls[0]["endpoint"], "https://api.tensorslab.com/v1/images/seedreamv5")
+        self.assertEqual(fields["category"], "seedreamv5")
+        self.assertEqual(fields["batchsize"], "2")
+
     def test_zimage_uses_documented_default_resolution(self) -> None:
         result = run_cli(IMAGE_CLIENT, "ink illustration", "--model", "zimage", "--dry-run")
         self.assertEqual(json.loads(result.stdout)["resolution"], "1024*1024")

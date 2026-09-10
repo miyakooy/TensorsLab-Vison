@@ -23,7 +23,7 @@
 
 | 기능 | 상태 | 경계 |
 | --- | --- | --- |
-| 텍스트-이미지 / 이미지-이미지 | **구현됨** | SeeDream V4/V4.5 및 Z-Image API를 호출합니다. |
+| 텍스트-이미지 / 이미지-이미지 | **구현됨** | SeeDream V4/V4.5/V5 Lite 및 Z-Image API를 호출합니다. |
 | 텍스트-비디오 / 이미지-비디오 | **구현됨** | 네 가지 SeeDance API를 호출합니다. |
 | 상태 폴링 및 로컬 다운로드 | **구현됨** | 비동기 작업을 확인하고 반환 파일을 저장합니다. |
 | API 호출 없는 미리보기 | **구현됨** | `--dry-run`은 API Key나 크레딧을 사용하지 않습니다. |
@@ -34,6 +34,10 @@
 | 브라우저 UI와 팀 검토 | **저장소 외부** | 필요한 경우 Miaodashi를 사용하세요. |
 
 공개 CI에서는 비밀 API Key와 크레딧이 필요한 실제 생성을 실행하지 않습니다. CLI와 로컬 워크플로는 오프라인 테스트로 검증합니다.
+
+### 이미지 모델 제공 상태
+
+`seedreamv5`는 이 저장소에서 실행 가능하며 `POST /v1/images/seedreamv5`에 연결됩니다. TensorAI 제품에는 GPT Image 2와 GPT Image 2.5 계열도 있지만, TensorsLab 엔드포인트 이름과 요청 스키마는 아직 공식 API 인덱스에 공개되지 않았습니다. 검증 가능한 계약이 제공되기 전에는 CLI 선택지로 보이게 하지 않아, “제품에서 사용 가능”과 “오픈소스에서 실행 가능”을 명확히 구분합니다.
 
 ## 설치
 
@@ -75,6 +79,14 @@ python skills/tl-image/scripts/tensorslab_image.py \
 python skills/tl-image/scripts/tensorslab_image.py \
   "흰색 도자기 컵 상품 사진, 모양과 색상을 유지" \
   --model seedreamv45 --resolution 4:5
+```
+
+SeeDream V5 Lite로 상품 이미지를 생성하거나 변환하는 예시:
+
+```bash
+python skills/tl-image/scripts/tensorslab_image.py \
+  "고품질 상품 대표 이미지. 상품 형태와 라벨을 유지" \
+  --model seedreamv5 --source ./product.jpg --resolution 2K
 ```
 
 비디오 생성:

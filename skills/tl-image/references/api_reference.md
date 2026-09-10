@@ -87,7 +87,24 @@ All responses follow this structure:
 | `sourceImage` | file[] | No | Source images |
 | `imageUrl` | string | No | Source image URL |
 
-### 3. Generate Image (Z-Image)
+### 3. Generate Image (SeeDream V5 Lite)
+
+**Endpoint:** `POST /v1/images/seedreamv5`
+
+**Recommended for:** New-generation text-to-image and image-to-image generation
+
+**Parameters (multipart/form-data):**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `category` | string | No | Default: `seedreamv5` |
+| `prompt` | string | Yes | Text description |
+| `batchsize` | integer | No | 1–15, default: 1 |
+| `resolution` | string | No | Default: `2K` |
+| `sourceImage` | file[] | No | Source images for image-to-image |
+| `imageUrl` | string | No | URL of source image for image-to-image |
+
+### 4. Generate Image (Z-Image)
 
 **Endpoint:** `POST /v1/images/zimage`
 
@@ -102,7 +119,7 @@ All responses follow this structure:
 | `seed` | integer | No | Random seed for reproducibility |
 | `prompt_extend` | string | No | "1" to enable prompt enhancement |
 
-### 4. Query Task Status
+### 5. Query Task Status
 
 **Endpoint:** `POST /v1/images/infobytaskid`
 
@@ -144,7 +161,7 @@ All responses follow this structure:
 | 3 | Completed (url array contains results) |
 | 4 | Failed (check error_message field) |
 
-### 5. Delete Task
+### 6. Delete Task
 
 **Endpoint:** `POST /v1/images/deleteimagestask`
 
