@@ -11,13 +11,11 @@
   <img src="docs/assets/api-scenes.zh-CN.svg" alt="TensorsLab 图像 API、视频 API 与审核优先的工作流架构" width="100%" />
 </p>
 
-这个仓库不是 Miaodashi 产品功能的宣传页，而是三个可以安装和检查源码的 Skill：
-
 - `tl-image`：提交文生图或图生图任务，轮询状态并下载结果。
 - `tl-video`：提交文生视频或图生视频任务，轮询状态并下载结果。
 - `miaodashi-workshop`：在本地创建计划、审批记录、调用命令、质检记录和失败重试状态；生成阶段复用前两个客户端。
 
-[miaodashi.com](https://miaodashi.com) 是可选的无代码产品。本仓库的 API Skill 可以独立使用。
+如果你有直接的产品需求，可以访问 [miaodashi.com](https://miaodashi.com/)，它是可选的无代码产品。
 
 ## 真实能力清单
 
@@ -36,10 +34,6 @@
 | 浏览器 UI、团队审核、托管交付 | **不在本仓库** | 需要这类产品能力时再使用 Miaodashi。 |
 
 > 验证说明：仓库包含 CLI 参数和完整本地工作流的离线测试。公开 CI 不执行真实生成，因为它需要私有 API Key 并会消耗积分。
-
-### 图像模型可用性
-
-`seedreamv5` 已在仓库中可执行，对应 `POST /v1/images/seedreamv5`。TensorAI 产品侧目前也有 GPT Image 2 与 GPT Image 2.5 系列；但其 TensorsLab 接口名称和请求字段尚未出现在官方 API 索引中，因此暂不伪装成可运行的 CLI 选项。拿到可验证的接口契约后即可接入，确保“平台有模型”与“开源仓库可执行”两件事保持清晰。
 
 ## 安装
 

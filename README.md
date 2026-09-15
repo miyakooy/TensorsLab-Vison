@@ -21,7 +21,7 @@ This repository contains three installable skills:
 - `tl-video`: submits text-to-video or image-to-video tasks, polls their status, and downloads results.
 - `miaodashi-workshop`: creates local plans, approval records, dispatch commands, QA records, and selective retry state. It reuses the two API clients above and does **not** contain a second generation API.
 
-The no-code product at [miaodashi.com](https://miaodashi.com) is optional. The open-source API skills work independently.
+For direct product needs, visit [miaodashi.com](https://miaodashi.com/), an optional no-code product.
 
 ## What is actually implemented?
 
@@ -40,10 +40,6 @@ The no-code product at [miaodashi.com](https://miaodashi.com) is optional. The o
 | Browser UI, team review, managed batch delivery | **Not in this repository** | Use [Miaodashi](https://miaodashi.com) if that product workflow is required. |
 
 > Verification level: the repository has offline smoke tests for CLI validation and the complete local workshop lifecycle. Live generation is not run in public CI because it needs a private API key and consumes credits.
-
-### Image model availability
-
-`seedreamv5` is executable in this repository and maps to `POST /v1/images/seedreamv5`. The TensorAI product catalog also contains GPT Image 2 and GPT Image 2.5 families. Their TensorsLab endpoint names and request schemas are not yet published in the official API index, so they are deliberately not exposed as CLI options until the contract can be verified. This keeps a listed platform model separate from an executable open-source integration.
 
 ## Install
 
