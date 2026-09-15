@@ -47,6 +47,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", action="append", default=[], help="Output file path or durable output URL; repeatable")
     parser.add_argument("--task-id", help="TensorsLab task id, if supplied by the API")
     parser.add_argument("--note", default="", help="Sanitized error or review note; never include credentials")
+    parser.add_argument(
+        "--replace-approved",
+        action="store_true",
+        help="Required to replace the current output record of a completed task.",
+    )
     parser.add_argument("--qa", action="append", default=[], type=qa_value, help="Per-task QA result, e.g. product_truth=pass")
     return parser.parse_args()
 
@@ -79,6 +84,9 @@ def main() -> int:
     task = next((item for item in plan.get("tasks", []) if item.get("name") == args.task), None)
     if task is None:
         print("Error: task was not found; use its exact name from plan.json", file=sys.stderr)
+        return 2
+    if task.get("status") == "completed" and args.status == "completed" and not args.replace_approved:
+        print("Error: use revise_shot.py or --replace-approved before replacing a completed task output", file=sys.stderr)
         return 2
     now = datetime.now(timezone.utc).isoformat()
     task["status"] = args.status

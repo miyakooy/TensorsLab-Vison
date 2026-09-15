@@ -31,7 +31,8 @@ The no-code product at [miaodashi.com](https://miaodashi.com) is optional. The o
 | Text-to-video and image-to-video | **Implemented** | `tensorslab_video.py` calls four documented SeeDance endpoints. |
 | Task polling and local download | **Implemented** | Both clients poll task status and save returned URLs locally. |
 | Credential-free request preview | **Implemented** | Both clients support `--dry-run`; no API key or paid request is used. |
-| Plan → approval → dispatch → QA record | **Implemented locally** | Four workshop scripts create JSON/Markdown records and exact client commands. |
+| Plan → approval → dispatch → QA record | **Implemented locally** | Local workshop scripts create JSON/Markdown records and exact client commands. |
+| Editable video shot plan and assembly proposal | **Implemented locally** | Video runs retain per-shot intent, source continuity, generation settings, revision history, and a review-only FFmpeg concat proposal. |
 | Listing kits, creative batches, multi-ratio plans, SKU plans | **Workflow implemented** | Planning and per-task dispatch exist; there is no parallel batch executor yet. |
 | Retouch, watermark removal, object removal, face replacement | **Generative best effort** | These use the general image-to-image endpoint plus prompts. There is no dedicated mask or deterministic editing API in this repository. |
 | Exact masked/local replacement | **Not implemented** | The workflow stops at `approved_pending_capability`. A mask API or compositor is required. |
@@ -141,6 +142,20 @@ Then:
 </p>
 
 See [`skills/miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) for the full commands and supported scenarios.
+
+### Editable video shots, without a second video stack
+
+Use `ecommerce-spokesperson-video`, `product-comparison-video`, or `tourism-narrative-video` to make a local shot plan. Each task has a stable shot ID, script meaning, continuity notes, generation settings, and editable fields. Revise only one approved shot while retaining its prior output record:
+
+```bash
+python skills/miaodashi-workshop/scripts/revise_shot.py \
+  --run .miaodashi_output/travel-reel \
+  --task "目的地钩子镜头" \
+  --reason "Use a closer landmark reveal" \
+  --replace-approved
+```
+
+After every clip passes QA, `prepare_assembly.py` writes `concat.txt` and `assemble_plan.json`; it proposes an FFmpeg command but does not install or run FFmpeg. Voiceover, lip sync, captions, split-screen comparison, transitions, claims, brand typography, and final editing remain external post-production.
 
 ## Community showcase
 

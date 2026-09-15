@@ -160,6 +160,39 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         "execution_level": "direct_api",
         "tasks": ["开场镜头", "产品动作镜头", "收束镜头"],
     },
+    "ecommerce-spokesperson-video": {
+        "kind": "video",
+        "label": "电商口播镜头组（视觉素材）",
+        "reference": "references/ecommerce-videos.md#电商口播镜头组视觉素材",
+        "source_min": 1,
+        "source_max": 2,
+        "default_output_count": 3,
+        "max_output_count": 3,
+        "execution_level": "direct_api",
+        "tasks": ["人物钩子镜头", "商品演示 B-roll", "结尾留白镜头"],
+    },
+    "product-comparison-video": {
+        "kind": "video",
+        "label": "商品对比视频镜头组",
+        "reference": "references/ecommerce-videos.md#商品对比视频镜头组",
+        "source_min": 1,
+        "source_max": 2,
+        "default_output_count": 3,
+        "max_output_count": 3,
+        "execution_level": "direct_api",
+        "tasks": ["对比对象 A 镜头", "对比对象 B 镜头", "对比结尾留白镜头"],
+    },
+    "tourism-narrative-video": {
+        "kind": "video",
+        "label": "文旅新媒体镜头组",
+        "reference": "references/ecommerce-videos.md#文旅新媒体镜头组",
+        "source_min": 1,
+        "source_max": 2,
+        "default_output_count": 3,
+        "max_output_count": 3,
+        "execution_level": "direct_api",
+        "tasks": ["目的地钩子镜头", "体验细节镜头", "路线收束镜头"],
+    },
 }
 
 # Kept so plans created with the first release can be migrated without forcing
@@ -359,10 +392,37 @@ def scenario_tasks(
             }
             for row in sku_rows
         ]
-    return [
+    tasks = [
         {"name": name, "status": "planned", "prompt": "", "source_roles": [], "outputs": []}
         for name in creative_tasks(scenario, count)
     ]
+    if scenario["kind"] == "video":
+        for index, task in enumerate(tasks, start=1):
+            task["shot"] = {
+                "id": f"S{index:02d}",
+                "script_line": "",
+                "intent": "",
+                "depends_on": [f"S{index - 1:02d}"] if index > 1 else [],
+                "continuity": {
+                    "opening_frame": "",
+                    "closing_frame": "",
+                    "must_preserve": [],
+                },
+                "generation": {
+                    "model": "seedancev2",
+                    "ratio": "9:16",
+                    "duration_seconds": 5,
+                    "resolution": "720p",
+                },
+                "editable_fields": [
+                    "script_line",
+                    "intent",
+                    "prompt",
+                    "generation",
+                    "input_assets",
+                ],
+            }
+    return tasks
 
 
 def write_json(path: Path, value: object) -> None:
@@ -445,7 +505,7 @@ def main() -> int:
         }
 
     plan = {
-        "schema_version": 2,
+        "schema_version": 3,
         "project": args.project,
         "scenario": scenario_key,
         "requested_scenario": args.scenario,
@@ -472,6 +532,15 @@ def main() -> int:
             "approved_at": None,
         },
     }
+    if scenario["kind"] == "video":
+        plan["video_story"] = {
+            "format": "miaodashi.video-story@1",
+            "working_title": "",
+            "audience": "",
+            "message": "",
+            "voiceover_and_captions": "external_post_production",
+            "assembly": "prepare_assembly.py writes a reviewable FFmpeg concat proposal; it does not render a final edit.",
+        }
     if batch_sku:
         plan["batch_sku"] = batch_sku
     manifest = {

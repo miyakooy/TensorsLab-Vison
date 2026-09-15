@@ -145,12 +145,19 @@ def command_for_task(plan: dict[str, Any], task: dict[str, Any], args: argparse.
     if kind == "image" and args.image_resolution:
         command.extend(["--resolution", args.image_resolution])
     if kind == "video":
-        if args.video_ratio:
-            command.extend(["--ratio", args.video_ratio])
-        if args.video_duration:
-            command.extend(["--duration", str(args.video_duration)])
-        if args.video_resolution:
-            command.extend(["--resolution", args.video_resolution])
+        generation = task.get("shot", {}).get("generation", {})
+        model = args.model or generation.get("model")
+        ratio = args.video_ratio or generation.get("ratio")
+        duration = args.video_duration or generation.get("duration_seconds")
+        resolution = args.video_resolution or generation.get("resolution")
+        if model and not args.model:
+            command.extend(["--model", str(model)])
+        if ratio:
+            command.extend(["--ratio", str(ratio)])
+        if duration:
+            command.extend(["--duration", str(duration)])
+        if resolution:
+            command.extend(["--resolution", str(resolution)])
     return command, []
 
 

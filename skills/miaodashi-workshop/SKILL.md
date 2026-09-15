@@ -1,6 +1,6 @@
 ---
 name: miaodashi-workshop
-description: Plan, approve, run, and review a TensorsLab visual-production workflow for ecommerce product images, batch SKUs, campaign assets, and short product videos. Use when the user needs phone-photo retouch, product listings, detail-page image sets, creative batches, reference-led layouts, style variations, multi-ratio adaptations, batch SKU templates, local replacement planning, product showcase videos, social-ad clips, or campaign video sequences. Reuse the installed TensorsLab image and video skills for approved generation work.
+description: Plan, approve, run, revise, and review a TensorsLab visual-production workflow for ecommerce product images, batch SKUs, campaign assets, and editable short-video shot plans. Use when the user needs phone-photo retouch, product listings, detail-page image sets, creative batches, reference-led layouts, style variations, multi-ratio adaptations, batch SKU templates, local replacement planning, product showcase videos, ecommerce spokesperson visual clips, product-comparison edits, tourism/social-media video sequences, or campaign video sequences. Reuse the installed TensorsLab image and video skills for approved generation work.
 ---
 
 # Miaodashi Visual Workshop
@@ -13,10 +13,10 @@ This repository implements the local records and command preparation. It does no
 
 1. **掌柜 — understand.** Identify the scenario, channel, target deliverables, asset roles and non-negotiable constraints.
 2. **樱酥 — lock anchors.** Record visible product facts, brand direction, output ratios, prohibited changes and the user's supplied rights status.
-3. **茶博士 — plan.** Create one task per image or clip with one primary communication goal. Run `create_run.py`; it never makes paid API calls.
+3. **茶博士 — plan.** Create one task per image or clip with one primary communication goal. For video, define a shot ID, its narrative intent, source continuity, model settings and editable fields in `plan.json`. Run `create_run.py`; it never makes paid API calls.
 4. **Obtain explicit approval.** Show the user the source-role map, immutable facts, planned prompts, task count, model choice and assumptions. Do not generate before approval.
 5. **麻薯 — preflight, then execute.** Run `prepare_dispatch.py` to inspect the exact existing-client command for every eligible task. It never calls an API. After review, use the existing `tl-image` or `tl-video` client and retain its parameters and returned task ID.
-6. **汤汤 — review and resume.** Check product truth, visual quality, text/rights and publication readiness. Regenerate only failed tasks; never overwrite an approved result by default.
+6. **汤汤 — review and resume.** Check product truth, visual quality, text/rights and publication readiness. Regenerate only failed tasks; use `revise_shot.py` for a deliberate local shot change and preserve earlier approved output history.
 7. **砚先生 — iterate on request.** Label A/B variants clearly. Do not predict commercial performance without supplied business data.
 
 ## Select a scenario
@@ -35,6 +35,9 @@ Read only the reference that matches the job.
 | 批量 SKU 模板生产 | `batch-sku` | `references/ecommerce-images.md#批量-sku-模板生产` | 先样张，后批量 |
 | 局部替换规划 | `local-replace` | `references/ecommerce-images.md#局部替换规划` | 需遮罩 API 或后期工具 |
 | 商品展示、社媒广告或活动视频 | `product-showcase-video` / `social-ad-video` / `campaign-video` | `references/ecommerce-videos.md` | TensorsLab 视频 API |
+| 电商口播视觉素材 | `ecommerce-spokesperson-video` | `references/ecommerce-videos.md#电商口播镜头组视觉素材` | 逐镜生成；配音、口型、字幕和剪辑在外部完成 |
+| 商品对比视频 | `product-comparison-video` | `references/ecommerce-videos.md#商品对比视频镜头组` | 逐镜生成；分屏、标签和事实文案在外部完成 |
+| 文旅新媒体视频 | `tourism-narrative-video` | `references/ecommerce-videos.md#文旅新媒体镜头组` | 逐镜生成；旁白、地图和发布信息在外部完成 |
 | 审核、重试、交付 | — | `references/quality-gates.md` | 本地 QA 记录 |
 
 If a job combines images and video, complete and approve the image plan first; pass an approved image into the video plan.
@@ -75,6 +78,8 @@ manifest.json   # task attempts, outputs and resumable state
 qa.json         # review findings and retry notes
 assets/         # reserved for organized local inputs
 outputs/        # reserved for final delivery files
+assemble_plan.json # video only: review-only FFmpeg concat proposal after every clip passes QA
+concat.txt       # video only: proposed input order; no FFmpeg command is run by this skill
 ```
 
 Fill `constraints.immutable_facts`, `constraints.brand_anchors` and every task prompt in `plan.json`; show the equivalent plan to the user. After they explicitly approve it, record that decision:
@@ -84,6 +89,8 @@ python skills/miaodashi-workshop/scripts/approve_run.py \
   --run .miaodashi_output/spring-jacket-launch \
   --approved-by "user-confirmed"
 ```
+
+For a video run, fill `video_story` and every task's `shot` object before approval. `shot.script_line` records the approved spoken meaning, while `prompt` directs the visual clip. This does not create controlled speech, lip sync, word-level captions, or a final edit. The per-shot `generation` object supplies the default model, ratio, duration and resolution to `prepare_dispatch.py`; CLI flags override it for one dispatch.
 
 For `batch-sku`, validate the required `sku,product_file` columns before planning. A minimal starter mapping is available at `examples/sku-mapping.csv`.
 
@@ -116,6 +123,28 @@ python skills/miaodashi-workshop/scripts/record_result.py \
 ```
 
 Use `failed` or `qa_failed` when appropriate. The manifest keeps successful tasks untouched and flags only the failed task for retry. Never write API keys, bearer tokens or raw authorization headers to plans, manifests, notes or errors.
+
+## Revise one video shot and prepare an external assembly handoff
+
+To revise one shot without invalidating the rest of an approved edit, reopen only that task. A completed shot requires the explicit guard below; its previous output is preserved in `previous_outputs`.
+
+```bash
+python skills/miaodashi-workshop/scripts/revise_shot.py \
+  --run .miaodashi_output/cup-launch \
+  --task "人物钩子镜头" \
+  --reason "Opening needs a closer product reveal" \
+  --prompt "[approved replacement visual prompt]" \
+  --replace-approved
+```
+
+After all video tasks have a local, QA-passed output, prepare—not execute—the proposed concatenation:
+
+```bash
+python skills/miaodashi-workshop/scripts/prepare_assembly.py \
+  --run .miaodashi_output/cup-launch
+```
+
+This writes `concat.txt` and `assemble_plan.json`, including an FFmpeg stream-copy proposal. It does not install or run FFmpeg, normalize codecs, add transitions, create captions, mix audio, render claims, or publish a video. Review codec compatibility and finish those operations in a post-production tool.
 
 ## Miaodashi handoff
 

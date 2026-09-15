@@ -28,6 +28,7 @@
 | 状態確認とローカル保存 | **実装済み** | 非同期タスクをポーリングして結果を保存します。 |
 | API を呼ばないプレビュー | **実装済み** | `--dry-run` は API Key もクレジットも使用しません。 |
 | 計画 → 承認 → コマンド → QA | **ローカル実装済み** | JSON/Markdown と実行コマンドを生成します。 |
+| 編集可能な動画ショット計画 | **ローカル実装済み** | ショット ID、意図、接続、生成設定、改訂履歴、確認用の FFmpeg 結合案を保存します。 |
 | 商品画像セット、複数比率、SKU 計画 | **ワークフロー実装済み** | タスク単位の実行。並列バッチ実行は未実装です。 |
 | レタッチ、透かし・物体削除、顔置換 | **生成 AI のベストエフォート** | 汎用 Image-to-Image とプロンプトを使用。専用マスク API ではありません。 |
 | 正確な部分置換 | **未実装** | マスク API または合成ツールが必要です。 |
@@ -106,6 +107,8 @@ API Key は [TensorsLab Console](https://tensorai.tensorslab.com/) で取得で�
 </p>
 
 完全な手順は [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) を参照してください。
+
+`ecommerce-spokesperson-video`、`product-comparison-video`、`tourism-narrative-video` は、各ショットを `plan.json` で個別に編集・再生成できます。`prepare_assembly.py` は確認用の `concat.txt` と FFmpeg 提案だけを作成し、レンダリングは行いません。音声、リップシンク、字幕、分割画面、最終編集は外部工程です。
 
 <p align="center">
   <img src="docs/assets/quality-gates.ja.svg" alt="計画、プロンプト、マニフェスト、QA、実行記録" width="100%" />

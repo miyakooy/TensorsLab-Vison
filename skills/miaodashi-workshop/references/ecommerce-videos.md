@@ -37,6 +37,30 @@ or product deformation. End on a clean [wide / medium / close] frame.
 
 **Plan:** assign one source asset and one action to each clip. Make the final frame of a clip compatible with the opening frame of the next. If `seedancev2` is selected, use only its supported optional audio and final-frame flags; otherwise omit them.
 
+## 电商口播镜头组（视觉素材）
+
+**Use for:** a presenter-led ecommerce ad assembled from a visual hook, product demonstration, and copy-safe ending.
+
+**Collect:** approved presenter/product references, product facts, a reviewed spoken script, channel ratio, and the post-production owner for voiceover and captions.
+
+**Plan:** create visual clips independently. Put the spoken script in each task's `shot.script_line`, but do not claim the generated clip has controlled dialogue or lip sync. Generate a presenter-style visual hook, product B-roll, and an ending with room for deterministic copy. Use external tooling for voice, word-level captions, price, CTA, and final editing.
+
+## 商品对比视频镜头组
+
+**Use for:** a before/after, product A/product B, or feature-comparison edit.
+
+**Collect:** approved assets for each comparison object, the precise comparison claim, target ratio, and approved factual copy.
+
+**Plan:** create separate clips for A and B and a neutral copy-safe ending. Do not state that an AI clip proves a performance claim. Side-by-side composition, labels, measurements, prices, and legal substantiation stay in deterministic post-production.
+
+## 文旅新媒体镜头组
+
+**Use for:** destination teasers, itinerary reels, venue highlights, or creator-led travel posts.
+
+**Collect:** rights-cleared location/person references, destination facts, season/time constraints, intended audience, and a narrative sequence.
+
+**Plan:** use one primary action per clip: destination hook, sensory/experience detail, then a route or invitation ending. Keep unsupported real-world claims, transportation schedules, and prices out of generated visuals. Use external tools for narration, captions, maps, and publication details.
+
 ## 未被 API 支持时不得承诺
 
-Do not advertise lip-synced dialogue, multi-character performance, frame-perfect camera continuity, or start-and-end-frame control unless the chosen TensorsLab video endpoint exposes those inputs and the user has approved the result plan.
+Do not advertise lip-synced dialogue, controlled spoken dialogue, multi-character performance, frame-perfect camera continuity, split-screen composition, or start-and-end-frame control unless the chosen TensorsLab video endpoint exposes those inputs and the user has approved the result plan.

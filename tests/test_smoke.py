@@ -220,6 +220,83 @@ class WorkshopSmokeTests(unittest.TestCase):
             updated = json.loads(plan_path.read_text(encoding="utf-8"))
             self.assertEqual(updated["status"], "completed")
 
+    def test_video_shots_can_be_revised_and_prepared_for_external_assembly(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = Path(temp_dir)
+            source = temp / "product.jpg"
+            source.write_bytes(b"test fixture")
+            output_root = temp / "runs"
+            run_cli(
+                WORKSHOP / "create_run.py",
+                "--project",
+                "travel-reel",
+                "--scenario",
+                "tourism-narrative-video",
+                "--source",
+                source,
+                "--output-dir",
+                output_root,
+            )
+            run_dir = output_root / "travel-reel"
+            plan_path = run_dir / "plan.json"
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(plan["video_story"]["format"], "miaodashi.video-story@1")
+            self.assertEqual(plan["tasks"][0]["shot"]["id"], "S01")
+            plan["constraints"]["immutable_facts"] = ["rights-cleared destination image"]
+            plan["constraints"]["brand_anchors"] = ["natural sunrise"]
+            for task in plan["tasks"]:
+                task["prompt"] = f"Create the approved visual for {task['name']}."
+                task["shot"]["script_line"] = "Approved narration meaning."
+            plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            run_cli(WORKSHOP / "approve_run.py", "--run", run_dir, "--approved-by", "test-user")
+            run_cli(WORKSHOP / "prepare_dispatch.py", "--run", run_dir)
+            dispatch = json.loads((run_dir / "dispatch.json").read_text(encoding="utf-8"))
+            self.assertIn("seedancev2", dispatch["commands"][0]["command"])
+            for index, task in enumerate(plan["tasks"], start=1):
+                output = run_dir / "outputs" / f"shot-{index}.mp4"
+                output.write_bytes(b"test video")
+                run_cli(
+                    WORKSHOP / "record_result.py",
+                    "--run",
+                    run_dir,
+                    "--task",
+                    task["name"],
+                    "--status",
+                    "completed",
+                    "--output",
+                    output,
+                    "--qa",
+                    "visual_quality=pass",
+                )
+            run_cli(WORKSHOP / "prepare_assembly.py", "--run", run_dir)
+            assembly = json.loads((run_dir / "assemble_plan.json").read_text(encoding="utf-8"))
+            self.assertEqual(assembly["mode"], "review_only_no_ffmpeg_execution")
+            self.assertEqual(len(assembly["clips"]), 3)
+            first_task = plan["tasks"][0]["name"]
+            run_cli(
+                WORKSHOP / "revise_shot.py",
+                "--run",
+                run_dir,
+                "--task",
+                first_task,
+                "--reason",
+                "need a closer opening",
+                expected=2,
+            )
+            run_cli(
+                WORKSHOP / "revise_shot.py",
+                "--run",
+                run_dir,
+                "--task",
+                first_task,
+                "--reason",
+                "need a closer opening",
+                "--replace-approved",
+            )
+            revised = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(revised["tasks"][0]["status"], "planned")
+            self.assertEqual(len(revised["tasks"][0]["previous_outputs"]), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

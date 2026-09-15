@@ -27,7 +27,8 @@
 | 文生视频、图生视频 | **已实现** | Python 客户端调用四个 SeeDance 接口。 |
 | 任务轮询和本地下载 | **已实现** | 查询异步任务状态并保存返回文件。 |
 | 不消耗积分的请求预览 | **已实现** | 两个客户端都支持 `--dry-run`，不需要 API Key。 |
-| 计划、审批、派发、质检记录 | **本地已实现** | 四个脚本输出 JSON/Markdown，并生成准确的客户端命令。 |
+| 计划、审批、派发、质检记录 | **本地已实现** | 本地脚本输出 JSON/Markdown，并生成准确的客户端命令。 |
+| 可编辑视频分镜与合成方案 | **本地已实现** | 视频任务保留分镜意图、素材衔接、生成参数、修改历史，以及仅供审核的 FFmpeg 拼接方案。 |
 | 主图组、创意批次、多比例、SKU 批量计划 | **编排已实现** | 可以逐任务派发；尚无并行批量执行器。 |
 | 精修、去水印、物体擦除、换脸 | **生成式尽力而为** | 使用通用图生图加提示词，不是专用遮罩或确定性编辑接口。 |
 | 精确局部替换 | **未实现** | 流程会停在 `approved_pending_capability`，需要遮罩 API 或后期合成。 |
@@ -125,6 +126,12 @@ python skills/miaodashi-workshop/scripts/create_run.py \
 ```
 
 之后依次补全 `plan.json`、确认 `prompts.md`、执行 `approve_run.py`、生成 `dispatch.json`，最后逐项执行并用 `record_result.py` 登记结果。完整命令见 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)。
+
+### 可局部修改的视频分镜
+
+`ecommerce-spokesperson-video`、`product-comparison-video` 与 `tourism-narrative-video` 会在 `plan.json` 中为每一镜建立稳定 ID、口播含义、衔接说明、生成参数与可改字段。若要只重做一镜，使用 `revise_shot.py`；已通过镜头必须显式加入 `--replace-approved`，旧输出会保留在历史记录中。
+
+所有镜头 QA 通过后，`prepare_assembly.py` 只会写入 `concat.txt` 和 `assemble_plan.json`，提供可审核的 FFmpeg 拼接建议，不会安装或执行 FFmpeg。配音、口型、字幕、分屏、转场、价格与卖点文字、品牌排版和最终剪辑仍需外部后期工具。
 
 <p align="center">
   <img src="docs/assets/quality-gates.zh-CN.svg" alt="本地计划、提示词、任务清单、质检与派发记录" width="100%" />

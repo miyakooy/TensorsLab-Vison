@@ -28,6 +28,7 @@
 | 상태 폴링 및 로컬 다운로드 | **구현됨** | 비동기 작업을 확인하고 반환 파일을 저장합니다. |
 | API 호출 없는 미리보기 | **구현됨** | `--dry-run`은 API Key나 크레딧을 사용하지 않습니다. |
 | 계획 → 승인 → 명령 → QA | **로컬 구현됨** | JSON/Markdown 기록과 정확한 명령을 생성합니다. |
+| 편집 가능한 비디오 샷 계획 | **로컬 구현됨** | 샷 ID, 의도, 연결, 생성 설정, 수정 이력 및 검토용 FFmpeg 연결 제안을 보존합니다. |
 | 상품 이미지 세트, 여러 비율, SKU 계획 | **워크플로 구현됨** | 작업별 실행은 가능하지만 병렬 배치 실행기는 없습니다. |
 | 리터치, 워터마크·객체 제거, 얼굴 교체 | **생성형 최선 노력** | 일반 이미지-이미지와 프롬프트를 사용하며 전용 마스크 API가 아닙니다. |
 | 정확한 부분 교체 | **미구현** | 마스크 API 또는 합성 도구가 필요합니다. |
@@ -106,6 +107,8 @@ API Key는 [TensorsLab Console](https://tensorai.tensorslab.com/)에서 받을 �
 </p>
 
 전체 과정은 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)를 참고하세요.
+
+`ecommerce-spokesperson-video`, `product-comparison-video`, `tourism-narrative-video`는 `plan.json`에서 각 샷을 따로 수정하고 다시 생성할 수 있습니다. `prepare_assembly.py`는 검토용 `concat.txt`와 FFmpeg 제안만 만들며 렌더링하지 않습니다. 음성, 립싱크, 자막, 분할 화면 및 최종 편집은 외부 후반 작업입니다.
 
 <p align="center">
   <img src="docs/assets/quality-gates.ko.svg" alt="계획, 프롬프트, 매니페스트, QA 및 실행 기록" width="100%" />
