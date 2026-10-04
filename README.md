@@ -139,6 +139,8 @@ Then:
 
 See [`skills/miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) for the full commands and supported scenarios.
 
+See the [reliability roadmap](docs/prd-reliability-roadmap.md) for priorities, implementation phases, and acceptance criteria.
+
 ### Editable video shots, without a second video stack
 
 Use `ecommerce-spokesperson-video`, `product-comparison-video`, or `tourism-narrative-video` to make a local shot plan. Each task has a stable shot ID, script meaning, continuity notes, generation settings, and editable fields. Revise only one approved shot while retaining its prior output record:

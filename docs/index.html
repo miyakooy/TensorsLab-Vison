@@ -441,7 +441,7 @@
         <section id="workflows" class="section" aria-labelledby="workflow-title">
           <div class="section-head">
             <div><div class="eyebrow">Miaodashi workshop</div><h2 id="workflow-title">从素材，到可审核、可续跑的视觉生产。</h2></div>
-            <p class="section-note">场景层负责素材职责、审批、质检与任务记录；生成始终复用仓库已有的 TensorsLab 图像和视频客户端。</p>
+            <p class="section-note">场景层负责素材职责、内容绑定审批、质检门禁与任务记录；提示词、参数或素材变化后必须重新批准。</p>
           </div>
           <div class="workflow-tabs" role="tablist" aria-label="场景筛选">
             <button class="tab active" data-filter="all">全部</button>
@@ -506,7 +506,7 @@
           <div class="run-sheet" id="start">
             <div class="eyebrow">Start with the skill</div>
             <h2>方案先行，<br />再提交付费生成。</h2>
-            <p>用 `miaodashi-workshop` 建立一份待确认的任务计划；批准后先生成不调用 API 的 dispatch 清单，再逐项复用现有客户端执行。</p>
+            <p>用 `miaodashi-workshop` 建立待确认的任务计划；批准会绑定提示词、参数和素材内容，四项 QA 完成后结果才进入可交付状态。</p>
             <div class="command"><code id="install-command">npx skills add miyakooy/TensorsLab-Vison -g -y</code><button class="copy" data-copy-target="install-command">复制</button></div>
             <div class="hero-actions" style="margin-top: 17px;"><a class="button primary" style="border-color: var(--sun); color: var(--ink); background: var(--sun);" href="https://miaodashi.com">前往喵大师 ↗</a><a class="button" style="border-color: rgba(244,240,231,.4); color: var(--paper);" href="https://github.com/miyakooy/TensorsLab-Vison">打开仓库 ↗</a></div>
           </div>

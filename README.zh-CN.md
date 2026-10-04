@@ -121,6 +121,8 @@ python skills/miaodashi-workshop/scripts/create_run.py \
 
 之后依次补全 `plan.json`、确认 `prompts.md`、用 `approve_run.py` 记录获批模型和输出参数、生成 `dispatch.json`，最后逐项执行并用 `record_result.py` 登记生成与四项 QA 结果。提示词、参数、约束或本地素材内容变化后，派发会要求重新批准。完整命令见 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)。
 
+优先级、后续阶段与验收条件见[可靠生产工作流改造计划](docs/prd-reliability-roadmap.zh-CN.md)。
+
 ### 可局部修改的视频分镜
 
 `ecommerce-spokesperson-video`、`product-comparison-video` 与 `tourism-narrative-video` 会在 `plan.json` 中为每一镜建立稳定 ID、口播含义、衔接说明、生成参数与可改字段。若要只重做一镜，使用 `revise_shot.py`；已通过镜头必须显式加入 `--replace-approved`，旧输出会保留在历史记录中。

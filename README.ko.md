@@ -27,7 +27,7 @@
 | 텍스트-비디오 / 이미지-비디오 | **구현됨** | 네 가지 SeeDance API를 호출합니다. |
 | 상태 폴링 및 로컬 다운로드 | **구현됨** | 비동기 작업을 확인하고 반환 파일을 저장합니다. |
 | API 호출 없는 미리보기 | **구현됨** | `--dry-run`은 API Key나 크레딧을 사용하지 않습니다. |
-| 계획 → 승인 → 명령 → QA | **로컬 구현됨** | JSON/Markdown 기록과 정확한 명령을 생성합니다. |
+| 계획 → 승인 → 명령 → QA | **로컬 구현됨** | 승인은 작업 내용, 생성 파라미터, 로컬 자산 해시에 연결됩니다. 생성, QA, 납품 상태는 별도로 기록합니다. |
 | 편집 가능한 비디오 샷 계획 | **로컬 구현됨** | 샷 ID, 의도, 연결, 생성 설정, 수정 이력 및 검토용 FFmpeg 연결 제안을 보존합니다. |
 | 상품 이미지 세트, 여러 비율, SKU 계획 | **워크플로 구현됨** | 작업별 실행은 가능하지만 병렬 배치 실행기는 없습니다. |
 | 리터치, 워터마크·객체 제거, 얼굴 교체 | **생성형 최선 노력** | 일반 이미지-이미지와 프롬프트를 사용하며 전용 마스크 API가 아닙니다. |
@@ -102,7 +102,9 @@ API Key는 [TensorsLab Console](https://tensorai.tensorslab.com/)에서 받을 �
   <img src="docs/assets/workshop-flow.ko.svg" alt="에셋, 사실 고정, 프롬프트 계획, 생성, QA 및 납품 흐름" width="100%" />
 </p>
 
-전체 과정은 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)를 참고하세요.
+전체 과정은 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)를 참고하세요. 승인 후 프롬프트, 파라미터, 제약 또는 로컬 자산이 바뀌면 다시 승인해야 합니다. 네 가지 QA 항목이 모두 통과하거나 명시적으로 해당 없음으로 표시되어야 납품할 수 있습니다.
+
+우선순위와 다음 구현 단계는 [신뢰성 로드맵](docs/prd-reliability-roadmap.ko.md)에 정리되어 있습니다.
 
 `ecommerce-spokesperson-video`, `product-comparison-video`, `tourism-narrative-video`는 `plan.json`에서 각 샷을 따로 수정하고 다시 생성할 수 있습니다. `prepare_assembly.py`는 검토용 `concat.txt`와 FFmpeg 제안만 만들며 렌더링하지 않습니다. 음성, 립싱크, 자막, 분할 화면 및 최종 편집은 외부 후반 작업입니다.
 

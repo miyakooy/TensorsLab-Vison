@@ -27,7 +27,7 @@
 | Text-to-Video / Image-to-Video | **実装済み** | 4 種類の SeeDance API を呼び出します。 |
 | 状態確認とローカル保存 | **実装済み** | 非同期タスクをポーリングして結果を保存します。 |
 | API を呼ばないプレビュー | **実装済み** | `--dry-run` は API Key もクレジットも使用しません。 |
-| 計画 → 承認 → コマンド → QA | **ローカル実装済み** | JSON/Markdown と実行コマンドを生成します。 |
+| 計画 → 承認 → コマンド → QA | **ローカル実装済み** | 承認はタスク内容、生成パラメータ、ローカル素材のハッシュに結び付きます。生成、QA、納品状態は別々に記録します。 |
 | 編集可能な動画ショット計画 | **ローカル実装済み** | ショット ID、意図、接続、生成設定、改訂履歴、確認用の FFmpeg 結合案を保存します。 |
 | 商品画像セット、複数比率、SKU 計画 | **ワークフロー実装済み** | タスク単位の実行。並列バッチ実行は未実装です。 |
 | レタッチ、透かし・物体削除、顔置換 | **生成 AI のベストエフォート** | 汎用 Image-to-Image とプロンプトを使用。専用マスク API ではありません。 |
@@ -102,7 +102,9 @@ API Key は [TensorsLab Console](https://tensorai.tensorslab.com/) で取得で�
   <img src="docs/assets/workshop-flow.ja.svg" alt="素材、事実確認、プロンプト計画、生成、QA、納品の流れ" width="100%" />
 </p>
 
-完全な手順は [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) を参照してください。
+完全な手順は [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) を参照してください。承認後にプロンプト、パラメータ、制約、またはローカル素材が変更された場合は再承認が必要です。4 つの QA 項目がすべて合格、または明示的に対象外になるまで、成果物は納品可能になりません。
+
+優先順位と次の実装段階は[信頼性ロードマップ](docs/prd-reliability-roadmap.ja.md)にまとめています。
 
 `ecommerce-spokesperson-video`、`product-comparison-video`、`tourism-narrative-video` は、各ショットを `plan.json` で個別に編集・再生成できます。`prepare_assembly.py` は確認用の `concat.txt` と FFmpeg 提案だけを作成し、レンダリングは行いません。音声、リップシンク、字幕、分割画面、最終編集は外部工程です。
 

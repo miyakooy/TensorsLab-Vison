@@ -1,5 +1,7 @@
 # TensorsLab Vision 可靠生产工作流改造计划
 
+[English](prd-reliability-roadmap.md) · [日本語](prd-reliability-roadmap.ja.md) · [한국어](prd-reliability-roadmap.ko.md)
+
 ## 产品定位
 
 TensorsLab Vision 是面向 Agent 的图像与视频生成能力，以及可审核、可恢复的视觉生产工作流。改造借鉴 agentao 在批准绑定、状态表达、原子持久化和资源接入方面的设计方法，但不引入通用 Agent 运行框架。
