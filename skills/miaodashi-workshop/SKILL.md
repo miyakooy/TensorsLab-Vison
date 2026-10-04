@@ -1,6 +1,6 @@
 ---
 name: miaodashi-workshop
-description: Plan, approve, run, revise, and review a TensorsLab visual-production workflow for ecommerce product images, batch SKUs, campaign assets, and editable short-video shot plans. Use when the user needs phone-photo retouch, product listings, detail-page image sets, creative batches, reference-led layouts, style variations, multi-ratio adaptations, batch SKU templates, local replacement planning, product showcase videos, ecommerce spokesperson visual clips, product-comparison edits, tourism/social-media video sequences, or campaign video sequences. Reuse the installed TensorsLab image and video skills for approved generation work.
+description: Plan, approve, run, resume, revise, and QA a review-first TensorsLab visual-production workflow. Use for multi-deliverable ecommerce product images, batch SKUs, campaign assets, or editable short-video shot plans that need source roles, immutable product facts, content-bound approval, exact dispatch commands, persistent task records, delivery gates, or selective retries. Reuse tl-image and tl-video for approved generation; use those skills directly for a single generation request.
 ---
 
 # Miaodashi Visual Workshop

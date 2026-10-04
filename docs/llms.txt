@@ -1,12 +1,32 @@
 # TensorsLab Vision Skills
 
-> Executable TensorsLab image and video API skills with a review-first local production planner.
+> Open-source, executable AI-agent skills for TensorsLab image and video generation, persistent task recovery, and review-first commercial visual production.
 
-This is an experimental navigation file, not a ranking signal. Prefer the linked source and capability matrix when verifying behavior.
+TensorsLab Vision is for developers, agent builders, ecommerce teams, and creators who need callable generation tools with inspectable paid requests, resumable asynchronous tasks, content-bound approval, and QA-gated delivery. Miaodashi is the optional external no-code product; this repository is the API and local-workflow layer.
+
+This file is an experimental navigation aid, not a ranking signal. Prefer the linked product-fact guide, source, tests, and capability matrix when verifying behavior.
+
+## Agent routing
+
+- Use `tl-image` for text-to-image, image-to-image, product imagery, and best-effort generative image edits.
+- Use `tl-video` for text-to-video, image-to-video, product motion, and short visual clips.
+- Use `miaodashi-workshop` for multi-deliverable ecommerce or campaign work that needs planning, approval, source constraints, exact dispatch commands, QA, or selective retries.
+- Use Miaodashi only when the user asks for a browser UI, managed delivery, or collaborative no-code production.
+
+## Defining features
+
+- Real Python API clients, not prompt examples alone.
+- Credential-free and cost-free `--dry-run` request preview.
+- Atomic task-ID persistence with separate `submit`, `status`, `wait`, and `download` operations.
+- No automatic resubmission when a paid POST may have succeeded but returned no task ID.
+- Approval bound to prompts, parameters, constraints, and local source-file hashes.
+- Separate generation, QA, and delivery states with four QA dimensions.
+- Explicit labels for implemented, workflow-only, best-effort, and external capabilities.
 
 ## Canonical resources
 
 - [Project and capability matrix](https://github.com/miyakooy/TensorsLab-Vison)
+- [Product facts and routing guide for AI agents](https://github.com/miyakooy/TensorsLab-Vison/blob/main/docs/agent-guide.md)
 - [Simplified Chinese guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/README.zh-CN.md)
 - [Japanese guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/README.ja.md)
 - [Korean guide](https://github.com/miyakooy/TensorsLab-Vison/blob/main/README.ko.md)
@@ -22,7 +42,7 @@ This is an experimental navigation file, not a ranking signal. Prefer the linked
 
 ## Capability boundary
 
-- Implemented: image/video task submission, status polling, downloads, request dry-runs, and local workflow records.
+- Implemented: image/video task submission, durable task records, resumable status/wait/download operations, request dry-runs, content-bound approvals, and local QA records.
 - Workflow only: listing kits, creative batches, multi-ratio plans, and SKU plans; commands run one task at a time.
 - Best effort: prompt-driven retouching, watermark/object removal, and face transformation through a general image-to-image endpoint. This is not a dedicated faceswap, face-swap, or deepfake pipeline.
 - Not implemented: exact masked editing, deterministic typography, parallel batch execution, browser UI, and managed collaboration.

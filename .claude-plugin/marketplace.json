@@ -4,27 +4,27 @@
     "name": "TensorsLab"
   },
   "metadata": {
-    "description": "Executable TensorsLab image and video API skills, plus a local review-first planner for ecommerce and campaign production.",
-    "version": "1.4.0"
+    "description": "Executable AI-agent skills for TensorsLab image and video generation, resumable tasks, content-bound approval, and QA-gated visual production.",
+    "version": "1.4.1"
   },
   "plugins": [
     {
       "name": "tl-image",
       "source": "./skills/tl-image",
       "skills": "./",
-      "description": "Submit TensorsLab text-to-image or image-to-image tasks, validate parameters, preview requests, poll status, and save results locally."
+      "description": "Generate or transform images with TensorsLab APIs, preview requests, persist task IDs, resume operations, and save structured results locally."
     },
     {
       "name": "tl-video",
       "source": "./skills/tl-video",
       "skills": "./",
-      "description": "Submit TensorsLab text-to-video or image-to-video tasks, validate model-specific parameters, preview requests, poll status, and save results locally."
+      "description": "Generate or animate videos with TensorsLab APIs, validate model options, persist task IDs, resume operations, and save structured results locally."
     },
     {
       "name": "miaodashi-workshop",
       "source": "./skills/miaodashi-workshop",
       "skills": "./",
-      "description": "Create reviewable ecommerce image/video plans, approve them locally, prepare exact TensorsLab client commands, and record QA with selective retries."
+      "description": "Plan multi-deliverable visual production with content-bound approval, exact TensorsLab commands, persistent task records, QA gates, and selective retries."
     }
   ]
 }

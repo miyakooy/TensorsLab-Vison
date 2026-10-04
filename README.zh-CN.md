@@ -11,6 +11,26 @@
   <img src="docs/assets/api-scenes.zh-CN.svg" alt="TensorsLab 图像 API、视频 API 与审核优先的工作流架构" width="100%" />
 </p>
 
+## TensorsLab Vision 是什么？
+
+TensorsLab Vision 是一个面向 AI Agent 的开源视觉生成工具包。它让 Agent 通过 TensorsLab API 生成图片和视频，并用本地计划、审批、任务恢复和质检记录管理商业视觉生产。适合需要“能实际执行、过程可检查、任务可续跑”的开发者、Agent 构建者、电商团队和创作者。
+
+产品特色：
+
+- **可执行的 API Skill：**提供真实的文生图、图生图、文生视频和图生视频客户端，不只是提示词示例。
+- **付费调用前可检查：**先用 `--dry-run` 预览；审批会绑定提示词、参数、约束和源文件，变化后必须重新批准。
+- **任务中断可恢复：**任务被接受后立即保存 task ID，可单独执行 `status`、`wait`、`download`，不会重复创建付费生成。
+- **先质检再交付：**生成、QA、交付状态分开记录，必要检查通过后才标记为可交付。
+- **能力边界透明：**明确区分已实现代码、编排能力、生成式尽力而为和需要外部工具的步骤。
+
+### Agent 应该选择哪个 Skill？
+
+| 用户需求 | Skill | 产出 |
+| --- | --- | --- |
+| 生成或变换图片 | `tl-image` | 已校验的图片任务、持久化任务记录、本地文件和结构化 JSON 结果 |
+| 生成视频或让静态图片动起来 | `tl-video` | 已校验的视频任务、持久化任务记录、本地文件和结构化 JSON 结果 |
+| 规划电商或营销视觉生产 | `miaodashi-workshop` | 可审核计划、内容绑定审批、精确派发命令、逐任务 QA 与选择性重试记录 |
+
 - `tl-image`：提交文生图或图生图任务，轮询状态并下载结果。
 - `tl-video`：提交文生视频或图生视频任务，轮询状态并下载结果。
 - `miaodashi-workshop`：在本地创建计划、审批记录、调用命令、质检记录和失败重试状态；生成阶段复用前两个客户端。
@@ -156,4 +176,5 @@ python -m unittest discover -s tests -v
 - [工作坊 Skill](skills/miaodashi-workshop/SKILL.md) · [质量门禁](skills/miaodashi-workshop/references/quality-gates.md)
 - [社区作品展示](examples/README.md) · [贡献指南](CONTRIBUTING.md)
 - [GEO 与搜索收录说明](docs/discoverability.md)
+- [面向 AI Agent 的产品事实与路由指南](docs/agent-guide.md)
 - [GitHub Pages 展示页](https://miyakooy.github.io/TensorsLab-Vison/)

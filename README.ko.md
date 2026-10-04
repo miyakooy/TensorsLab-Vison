@@ -11,6 +11,26 @@
   <img src="docs/assets/api-scenes.ko.svg" alt="TensorsLab 이미지 API, 비디오 API 및 검토 우선 워크플로" width="100%" />
 </p>
 
+## TensorsLab Vision이란?
+
+TensorsLab Vision은 AI Agent가 TensorsLab API로 이미지와 영상을 생성하고, 로컬 승인·작업 복구·QA 기록으로 상업용 시각 제작을 관리하도록 돕는 오픈소스 도구 모음입니다. 실제 실행, 검토 가능한 과정, 중단 후 재개가 필요한 개발자, Agent 빌더, 이커머스 팀과 크리에이터를 위한 프로젝트입니다.
+
+주요 특징:
+
+- **실행 가능한 API Skill:** Text-to-Image, Image-to-Image, Text-to-Video, Image-to-Video 실제 클라이언트를 제공합니다.
+- **유료 호출 전 검토:** `--dry-run`으로 요청을 확인하고 승인을 프롬프트, 파라미터, 제약과 원본 파일에 연결합니다.
+- **재개 가능한 작업:** 접수된 task ID를 즉시 저장하고 새 생성을 만들지 않은 채 `status`, `wait`, `download`를 재개합니다.
+- **검토 우선 납품:** 생성, QA, 납품 상태를 분리하고 필수 검사를 통과한 결과만 납품 가능하게 표시합니다.
+- **명확한 기능 경계:** 구현 코드, 워크플로 계획, 생성형 최선 노력, 외부 도구가 필요한 단계를 구분합니다.
+
+### Agent가 선택할 Skill
+
+| 사용자 목적 | Skill | 결과 |
+| --- | --- | --- |
+| 이미지 생성 또는 변환 | `tl-image` | 검증된 이미지 작업, 영구 작업 기록, 로컬 파일, 구조화 JSON |
+| 영상 생성 또는 정지 이미지 애니메이션 | `tl-video` | 검증된 영상 작업, 영구 작업 기록, 로컬 파일, 구조화 JSON |
+| 이커머스·캠페인 제작 계획 | `miaodashi-workshop` | 검토 가능한 계획, 내용 연결 승인, 실행 명령, 작업별 QA와 선택 재시도 기록 |
+
 이 저장소에는 소스를 확인하고 설치할 수 있는 세 가지 Skill이 있습니다.
 
 - `tl-image`: 텍스트-이미지 및 이미지-이미지 작업을 제출하고 상태를 확인한 뒤 결과를 저장합니다.
@@ -128,4 +148,5 @@ python -m unittest discover -s tests -v
 - [비디오 Skill](skills/tl-video/SKILL.md)
 - [커뮤니티 작품](examples/README.ko.md) · [기여 가이드](CONTRIBUTING.md)
 - [GEO / 검색 노출 가이드](docs/discoverability.md)
+- [AI Agent용 제품 정보 및 라우팅 가이드](docs/agent-guide.md)
 - [GitHub Pages 한국어](https://miyakooy.github.io/TensorsLab-Vison/ko/)

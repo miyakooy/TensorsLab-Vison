@@ -1,6 +1,6 @@
 ---
 name: tensorslab-image
-description: "Generate images with TensorsLab SeeDream or Z-Image APIs, transform source images with prompt-driven image-to-image generation, preview request parameters, poll task status, and save returned files locally. Use for text-to-image, image-to-image, product imagery, avatars, or best-effort generative edits. Exact masking, deterministic object removal, and guaranteed identity replacement are not provided. Live generation requires TENSORSLAB_API_KEY."
+description: "Generate or transform images with TensorsLab SeeDream and Z-Image APIs. Use for text-to-image, image-to-image, product imagery, avatars, or best-effort generative edits when the user wants a direct generation rather than a multi-deliverable production plan. Preview paid requests, persist task IDs, resume status/wait/download operations, return structured JSON, and save files locally. Exact masking, deterministic object removal, and guaranteed identity replacement are not provided. Live generation requires TENSORSLAB_API_KEY."
 ---
 
 # TensorsLab Image Generation

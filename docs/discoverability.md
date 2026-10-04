@@ -12,6 +12,7 @@ This document records the repository's discoverability choices and separates est
 - `robots.txt` allowing public crawling, including `OAI-SearchBot`, and pointing to `sitemap.xml`.
 - `sitemap.xml` listing all localized Pages URLs and their reciprocal language alternates.
 - `llms.txt` as an experimental navigation aid. It is not treated as a ranking signal.
+- A canonical `agent-guide.md` with a one-sentence product definition, audience, routing table, differentiators, inputs, outputs, limits, and evidence links.
 - A capability matrix that distinguishes implemented APIs, local workflow code, best-effort model behavior, and missing functionality.
 
 ## What improves AI-search visibility

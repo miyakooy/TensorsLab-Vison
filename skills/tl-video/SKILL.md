@@ -1,6 +1,6 @@
 ---
 name: tensorslab-video
-description: Generate videos using TensorsLab's AI video generation models. Supports text-to-video and image-to-video generation with automatic prompt enhancement, progress tracking, and local file saving. Use for generating videos from text descriptions, animating static images, creating cinematic content, and various aspect ratios. Requires TENSORSLAB_API_KEY environment variable. Video generation takes several minutes.
+description: Generate videos with TensorsLab SeeDance APIs. Use for text-to-video, image-to-video, product motion, cinematic clips, or animating a still image when the user wants a direct generation rather than a multi-shot production plan. Validate model-specific options, preview paid requests, persist task IDs, resume status/wait/download operations, return structured JSON, and save files locally. Live generation requires TENSORSLAB_API_KEY and may take several minutes.
 ---
 
 # TensorsLab Video Generation
