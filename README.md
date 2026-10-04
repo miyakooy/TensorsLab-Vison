@@ -29,7 +29,7 @@ For direct product needs, visit [miaodashi.com](https://miaodashi.com/), an opti
 | --- | --- | --- |
 | Text-to-image and image-to-image | **Implemented** | `tensorslab_image.py` calls the documented SeeDream V4/V4.5/V5 Lite and Z-Image endpoints. |
 | Text-to-video and image-to-video | **Implemented** | `tensorslab_video.py` calls four documented SeeDance endpoints. |
-| Task polling and local download | **Implemented** | Both clients poll task status and save returned URLs locally. |
+| Persistent task recovery and local download | **Implemented** | Both clients persist accepted task IDs and provide separate `submit`, `status`, `wait`, and `download` operations with JSON results. |
 | Credential-free request preview | **Implemented** | Both clients support `--dry-run`; no API key or paid request is used. |
 | Plan → approval → dispatch → QA record | **Implemented locally** | Approval binds task content, generation parameters, and local asset hashes. Generation, QA, and delivery states are recorded separately. |
 | Editable video shot plan and assembly proposal | **Implemented locally** | Video runs retain per-shot intent, source continuity, generation settings, revision history, and a review-only FFmpeg concat proposal. |

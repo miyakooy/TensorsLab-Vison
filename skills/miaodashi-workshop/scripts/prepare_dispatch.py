@@ -135,7 +135,15 @@ def command_for_task(plan: dict[str, Any], task: dict[str, Any], args: argparse.
     if errors:
         return [], errors
 
-    command = [sys.executable, str(client_path(kind)), prompt, "--output-dir", str(run_dir / "outputs")]
+    command = [
+        sys.executable,
+        str(client_path(kind)),
+        prompt,
+        "--operation", "run",
+        "--output-dir", str(run_dir / "outputs"),
+        "--state-dir", str(run_dir / "task_records"),
+        "--json",
+    ]
     for source in local_paths:
         command.extend(["--source", source])
     if urls:
@@ -242,8 +250,9 @@ def main() -> int:
         "client": execution.get("skill"),
         "approval_format": approval.get("format"),
         "approved_parameters": parameters,
+        "task_record_directory": str(run_dir / "task_records"),
         "commands": prepared,
-        "next_step": "Review these commands, then invoke the existing TensorsLab client manually for each task and record the result with record_result.py.",
+        "next_step": "Review and run each command. The client writes a durable task record; pass its record_path to record_result.py after QA.",
     }
     write_json(run_dir / "dispatch.json", dispatch)
     print(f"Prepared {len(prepared)} review-only dispatch command(s): {run_dir / 'dispatch.json'}")

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import io
 import json
 import importlib.util
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,6 +33,11 @@ class FakeResponse:
 
     def json(self) -> dict:
         return {"code": 1000, "data": {"taskid": "task_test_123"}}
+
+
+class MissingTaskIdResponse(FakeResponse):
+    def json(self) -> dict:
+        return {"code": 1000, "data": {}}
 
 
 class FakeSession:
@@ -58,6 +66,106 @@ def run_cli(*args: object, expected: int = 0) -> subprocess.CompletedProcess[str
 
 
 class ClientSmokeTests(unittest.TestCase):
+    def test_success_response_without_task_id_is_submission_unknown(self) -> None:
+        module = load_module("tensorslab_image_missing_task_id_test", IMAGE_CLIENT)
+        fake = FakeSession()
+        fake.post = mock.Mock(return_value=MissingTaskIdResponse())
+        module._SESSION = fake
+        with self.assertRaises(module.TensorsLabSubmissionUnknown):
+            module.generate_image("approved product image", api_key="test-key")
+
+    def test_image_submit_persists_task_before_waiting(self) -> None:
+        module = load_module("tensorslab_image_submit_state_test", IMAGE_CLIENT)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_dir = Path(temp_dir) / "state"
+            stdout = io.StringIO()
+            argv = [
+                str(IMAGE_CLIENT), "approved product image",
+                "--operation", "submit",
+                "--state-dir", str(state_dir),
+                "--api-key", "test-key",
+            ]
+            with mock.patch.object(module, "generate_image", return_value="task_persisted_123"):
+                with mock.patch.object(sys, "argv", argv), redirect_stdout(stdout):
+                    self.assertEqual(module.main(), 0)
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(result["task_id"], "task_persisted_123")
+            self.assertEqual(result["generation_status"], "submitted")
+            record = json.loads(Path(result["record_path"]).read_text(encoding="utf-8"))
+            self.assertEqual(record["submission_status"], "accepted")
+            self.assertNotIn("api_key", json.dumps(record))
+
+    def test_unknown_submission_is_recorded_without_retry(self) -> None:
+        module = load_module("tensorslab_image_unknown_state_test", IMAGE_CLIENT)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_dir = Path(temp_dir) / "state"
+            stdout = io.StringIO()
+            argv = [
+                str(IMAGE_CLIENT), "approved product image",
+                "--operation", "submit",
+                "--state-dir", str(state_dir),
+                "--api-key", "test-key",
+            ]
+            failure = module.TensorsLabSubmissionUnknown("connection closed after submit")
+            with mock.patch.object(module, "generate_image", side_effect=failure) as submit:
+                with mock.patch.object(sys, "argv", argv), redirect_stdout(stdout):
+                    self.assertEqual(module.main(), 1)
+            submit.assert_called_once()
+            result = json.loads(stdout.getvalue())
+            self.assertIsNone(result["task_id"])
+            self.assertEqual(result["generation_status"], "submission_unknown")
+            self.assertEqual(result["error"]["code"], "SUBMISSION_UNKNOWN")
+            self.assertTrue(Path(result["record_path"]).is_file())
+
+    def test_video_status_reads_existing_task_without_submitting(self) -> None:
+        module = load_module("tensorslab_video_status_state_test", VIDEO_CLIENT)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            state_dir = Path(temp_dir) / "state"
+            stdout = io.StringIO()
+            argv = [
+                str(VIDEO_CLIENT),
+                "--operation", "status",
+                "--task-id", "video_existing_123",
+                "--state-dir", str(state_dir),
+                "--api-key", "test-key",
+            ]
+            status = {"task_status": 3, "url": ["https://example.com/result.mp4"]}
+            with mock.patch.object(module, "query_task_status", return_value=status):
+                with mock.patch.object(module, "generate_video") as submit:
+                    with mock.patch.object(sys, "argv", argv), redirect_stdout(stdout):
+                        self.assertEqual(module.main(), 0)
+            submit.assert_not_called()
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(result["generation_status"], "completed")
+            self.assertEqual(result["next_action"], "download")
+
+    def test_image_download_resumes_without_submitting(self) -> None:
+        module = load_module("tensorslab_image_download_resume_test", IMAGE_CLIENT)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = Path(temp_dir)
+            state_dir = temp / "state"
+            output_dir = temp / "output"
+            downloaded = output_dir / "task_existing_0.png"
+            status = {"image_status": 3, "url": ["https://example.com/result.png"]}
+            stdout = io.StringIO()
+            argv = [
+                str(IMAGE_CLIENT),
+                "--operation", "download",
+                "--task-id", "task_existing",
+                "--state-dir", str(state_dir),
+                "--output-dir", str(output_dir),
+                "--api-key", "test-key",
+            ]
+            with mock.patch.object(module, "query_task_status", return_value=status):
+                with mock.patch.object(module, "download_task_outputs", return_value=[str(downloaded)]):
+                    with mock.patch.object(module, "generate_image") as submit:
+                        with mock.patch.object(sys, "argv", argv), redirect_stdout(stdout):
+                            self.assertEqual(module.main(), 0)
+            submit.assert_not_called()
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(result["download_status"], "completed")
+            self.assertEqual(result["outputs"], [str(downloaded.resolve())])
+
     def test_image_submit_builds_documented_multipart_fields(self) -> None:
         module = load_module("tensorslab_image_test", IMAGE_CLIENT)
         fake = FakeSession()
@@ -210,18 +318,24 @@ class WorkshopSmokeTests(unittest.TestCase):
 
             output = run_dir / "outputs/hero.png"
             output.write_bytes(b"test output")
+            task_record = run_dir / "task_records/task_test_123.json"
+            task_record.write_text(json.dumps({
+                "format": "tensorslab.task@1",
+                "kind": "image",
+                "task_id": "task_test_123",
+                "generation_status": "completed",
+                "download_status": "completed",
+                "outputs": [str(output)],
+            }), encoding="utf-8")
             run_cli(
                 WORKSHOP / "record_result.py",
                 "--run",
                 run_dir,
                 "--task",
                 "主图",
-                "--status",
-                "completed",
-                "--output",
-                output,
-                "--qa",
-                "product_truth=pass",
+                "--task-record",
+                task_record,
+                "--qa", "product_truth=pass",
                 "--qa",
                 "visual_quality=pass",
                 "--qa",

@@ -76,6 +76,7 @@ plan.json       # tasks, facts, asset roles and execution boundary
 prompts.md      # reviewable prompt worksheet
 manifest.json   # task attempts, outputs and resumable state
 qa.json         # review findings and retry notes
+task_records/   # durable tensorslab.task@1 records written immediately after API submission
 assets/         # reserved for organized local inputs
 outputs/        # reserved for final delivery files
 assemble_plan.json # video only: review-only FFmpeg concat proposal after every clip passes QA
@@ -111,7 +112,7 @@ python skills/miaodashi-workshop/scripts/prepare_dispatch.py \
   --image-resolution 4:5
 ```
 
-It writes `dispatch.json` with the exact `tl-image` or `tl-video` command for every planned, failed or QA-failed item. Review this file, then invoke the matching existing TensorsLab client under `skills/tl-image/` or `skills/tl-video/`. Do not construct a parallel HTTP client in this skill, and do not execute a command before the user approves the plan.
+It writes `dispatch.json` with the exact `tl-image` or `tl-video` command for every planned, failed or QA-failed item. Each command writes structured JSON and a durable task record under `task_records/`. Review this file, then invoke the matching existing TensorsLab client under `skills/tl-image/` or `skills/tl-video/`. Do not construct a parallel HTTP client in this skill, and do not execute a command before the user approves the plan.
 
 Once a task returns, record the exact output path or durable output URL and its review result:
 
@@ -119,9 +120,7 @@ Once a task returns, record the exact output path or durable output URL and its 
 python skills/miaodashi-workshop/scripts/record_result.py \
   --run .miaodashi_output/spring-jacket-launch \
   --task "主图" \
-  --status completed \
-  --output .miaodashi_output/spring-jacket-launch/outputs/hero.png \
-  --task-id task_123 \
+  --task-record .miaodashi_output/spring-jacket-launch/task_records/TASK_RECORD.json \
   --qa product_truth=pass \
   --qa visual_quality=pass \
   --qa text_and_rights=not_applicable \

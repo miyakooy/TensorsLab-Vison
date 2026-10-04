@@ -20,6 +20,8 @@ def read_json(path: Path) -> dict[str, Any]:
         value = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError as error:
         raise ValueError(f"missing run file: {path.name}") from error
+    except json.JSONDecodeError as error:
+        raise ValueError(f"invalid JSON in {path.name}: {error.msg}") from error
     if not isinstance(value, dict):
         raise ValueError(f"invalid JSON object: {path.name}")
     return value
@@ -43,7 +45,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Record an individual approved Miaodashi task result.")
     parser.add_argument("--run", required=True, help="Path to a run folder")
     parser.add_argument("--task", required=True, help="Exact task name in plan.json")
-    parser.add_argument("--status", required=True, choices=sorted(OUTCOMES))
+    parser.add_argument("--status", choices=sorted(OUTCOMES), help="Optional when --task-record provides a terminal state")
+    parser.add_argument("--task-record", help="Durable tensorslab.task@1 JSON record emitted by tl-image or tl-video")
     parser.add_argument("--output", action="append", default=[], help="Output file path or durable output URL; repeatable")
     parser.add_argument("--task-id", help="TensorsLab task id, if supplied by the API")
     parser.add_argument("--note", default="", help="Sanitized error or review note; never include credentials")
@@ -84,6 +87,32 @@ def aggregate_checks(tasks: list[dict[str, Any]], qa_tasks: dict[str, Any]) -> d
 
 def main() -> int:
     args = parse_args()
+    task_record: dict[str, Any] | None = None
+    if args.task_record:
+        try:
+            task_record = read_json(Path(args.task_record).expanduser())
+        except ValueError as error:
+            print(f"Error: {error}", file=sys.stderr)
+            return 2
+        if task_record.get("format") != "tensorslab.task@1":
+            print("Error: --task-record is not a tensorslab.task@1 record", file=sys.stderr)
+            return 2
+        if not args.task_id:
+            args.task_id = task_record.get("task_id")
+        if not args.output:
+            args.output = list(task_record.get("outputs", []) or [])
+        if args.status is None:
+            generation = task_record.get("generation_status")
+            if generation == "completed":
+                args.status = "completed"
+            elif generation == "failed":
+                args.status = "failed"
+            else:
+                print("Error: task record is not in a completed or failed generation state", file=sys.stderr)
+                return 2
+    if args.status is None:
+        print("Error: provide --status or a terminal --task-record", file=sys.stderr)
+        return 2
     run_dir = Path(args.run).expanduser()
     try:
         plan = read_json(run_dir / "plan.json")
@@ -100,6 +129,9 @@ def main() -> int:
     task = next((item for item in plan.get("tasks", []) if item.get("name") == args.task), None)
     if task is None:
         print("Error: task was not found; use its exact name from plan.json", file=sys.stderr)
+        return 2
+    if task_record is not None and task_record.get("kind") != plan.get("kind"):
+        print("Error: task record kind does not match this run", file=sys.stderr)
         return 2
     approval = plan.get("execution", {}).get("approval", {})
     approval_problem = approval_errors(plan, [task], approval.get("parameters", {}))

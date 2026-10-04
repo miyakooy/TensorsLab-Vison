@@ -7,7 +7,7 @@ description: Generate videos using TensorsLab's AI video generation models. Supp
 
 ## Overview
 
-This skill provides an executable TensorsLab API client for text-to-video and image-to-video workflows. The calling agent writes the final prompt. Use `--dry-run` to validate model-specific parameters and inspect the request before a paid call. Video generation is asynchronous and can take several minutes.
+This skill provides an executable TensorsLab API client for text-to-video and image-to-video workflows. The calling agent writes the final prompt. Use `--dry-run` to validate model-specific parameters and inspect the request before a paid call. Video generation is asynchronous and can take several minutes. Accepted task IDs are saved atomically so waiting and download can resume without submitting another paid task.
 
 ## Authentication Check
 
@@ -148,6 +148,26 @@ python scripts/tensorslab_video.py "epic mountain timelapse" --resolution 1440p 
 # Custom output directory
 python scripts/tensorslab_video.py "a sunset timelapse" --output-dir ./my_videos
 ```
+
+## Resumable Task Operations
+
+The default `run` operation keeps the original submit → wait → download behavior. Long video jobs can be separated safely:
+
+```bash
+# Submit once; prints JSON with task_id and record_path
+python scripts/tensorslab_video.py "approved product orbit" --operation submit
+
+# Query without downloading
+python scripts/tensorslab_video.py --operation status --task-id TASK_ID
+
+# Resume waiting for the same task
+python scripts/tensorslab_video.py --operation wait --task-id TASK_ID
+
+# Download a completed task without generating again
+python scripts/tensorslab_video.py --operation download --task-id TASK_ID
+```
+
+Records use `tensorslab.task@1` and default to `./.tensorslab_tasks/`; change this with `--state-dir`. `submit`, `status`, `wait`, and `download` always print structured JSON. Add `--json` to the default `run` operation. If submission may have reached the server but no task ID was returned, the client records `SUBMISSION_UNKNOWN` and must not resubmit automatically.
 
 ## Task Status Flow
 

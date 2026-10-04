@@ -26,7 +26,7 @@ Revising one shot revokes only that task's digest. Generation, QA, and delivery 
 
 ## PR 2: Task recovery and structured results
 
-Planned work:
+Status: implemented and ready for review.
 
 1. Add separate `submit`, `status`, `wait`, and `download` operations while preserving the current convenience command.
 2. Atomically persist the task ID and request summary immediately after submission.
@@ -34,7 +34,7 @@ Planned work:
 4. Resume polling when a task ID exists; retry only the download when downloading fails.
 5. Record `submission_unknown` when submission outcome is uncertain. Do not automatically resubmit a paid job until the server supports idempotency keys.
 
-Acceptance: a stopped process can resume the same task; a polling timeout is not reported as generation failure; a download retry never creates a new generation task.
+Verified behavior: a stopped process can resume the same task; a polling timeout is recorded separately from generation failure; a download retry never creates a new generation task. Workshop dispatch commands store records under the run directory and `record_result.py` can import a terminal task record.
 
 ## PR 3: Bounded batch executor
 

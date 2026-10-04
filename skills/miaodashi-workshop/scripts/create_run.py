@@ -494,6 +494,7 @@ def main() -> int:
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "assets").mkdir(exist_ok=True)
     (run_dir / "outputs").mkdir(exist_ok=True)
+    (run_dir / "task_records").mkdir(exist_ok=True)
 
     created_at = datetime.now(timezone.utc).isoformat()
     batch_sku = None

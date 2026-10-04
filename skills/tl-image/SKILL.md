@@ -7,7 +7,7 @@ description: "Generate images with TensorsLab SeeDream or Z-Image APIs, transfor
 
 ## Overview
 
-This skill provides an executable TensorsLab API client for text-to-image and image-to-image workflows. Prompt enhancement is performed by the calling agent, not by a separate endpoint in this script. Use `--dry-run` to validate and inspect the request before a paid call.
+This skill provides an executable TensorsLab API client for text-to-image and image-to-image workflows. Prompt enhancement is performed by the calling agent, not by a separate endpoint in this script. Use `--dry-run` to validate and inspect the request before a paid call. Accepted task IDs are saved atomically so polling or download can resume without submitting another paid task.
 
 ## Authentication Check
 
@@ -148,6 +148,26 @@ python scripts/tensorslab_image.py "ink illustration" --model zimage --seed 42
 # Custom output directory
 python scripts/tensorslab_image.py "a beautiful landscape" --output-dir ./my_images
 ```
+
+## Resumable Task Operations
+
+The default `run` operation keeps the original submit → wait → download behavior. Use separate operations for automation or recovery:
+
+```bash
+# Submit once; prints JSON with task_id and record_path
+python scripts/tensorslab_image.py "approved product hero" --operation submit
+
+# Query without downloading
+python scripts/tensorslab_image.py --operation status --task-id TASK_ID
+
+# Resume waiting for the same task
+python scripts/tensorslab_image.py --operation wait --task-id TASK_ID
+
+# Download a completed task without generating again
+python scripts/tensorslab_image.py --operation download --task-id TASK_ID
+```
+
+Records use `tensorslab.task@1` and default to `./.tensorslab_tasks/`; change this with `--state-dir`. `submit`, `status`, `wait`, and `download` always print structured JSON. Add `--json` to the default `run` operation. If submission may have reached the server but no task ID was returned, the client records `SUBMISSION_UNKNOWN` and must not resubmit automatically.
 
 ## Task Status Flow
 
