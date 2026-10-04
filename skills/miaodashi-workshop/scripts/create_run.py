@@ -505,7 +505,7 @@ def main() -> int:
         }
 
     plan = {
-        "schema_version": 3,
+        "schema_version": 4,
         "project": args.project,
         "scenario": scenario_key,
         "requested_scenario": args.scenario,
@@ -544,18 +544,30 @@ def main() -> int:
     if batch_sku:
         plan["batch_sku"] = batch_sku
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "project": args.project,
         "status": "draft",
         "created_at": created_at,
-        "task_status": {task["name"]: {"status": "planned", "outputs": [], "attempts": []} for task in tasks},
+        "task_status": {
+            task["name"]: {
+                "status": "planned",
+                "approval_status": "needs_approval",
+                "generation_status": "not_started",
+                "qa_status": "pending",
+                "delivery_status": "blocked",
+                "outputs": [],
+                "attempts": [],
+            }
+            for task in tasks
+        },
         "resume_policy": "retry only failed or qa_failed tasks; never overwrite approved outputs without explicit permission",
     }
     qa = {
-        "schema_version": 1,
+        "schema_version": 2,
         "project": args.project,
         "status": "not_started",
         "checks": {"product_truth": "pending", "visual_quality": "pending", "text_and_rights": "pending", "publication_review": "pending"},
+        "tasks": {task["name"]: {} for task in tasks},
         "retry_notes": [],
     }
 

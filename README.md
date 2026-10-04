@@ -31,7 +31,7 @@ For direct product needs, visit [miaodashi.com](https://miaodashi.com/), an opti
 | Text-to-video and image-to-video | **Implemented** | `tensorslab_video.py` calls four documented SeeDance endpoints. |
 | Task polling and local download | **Implemented** | Both clients poll task status and save returned URLs locally. |
 | Credential-free request preview | **Implemented** | Both clients support `--dry-run`; no API key or paid request is used. |
-| Plan → approval → dispatch → QA record | **Implemented locally** | Local workshop scripts create JSON/Markdown records and exact client commands. |
+| Plan → approval → dispatch → QA record | **Implemented locally** | Approval binds task content, generation parameters, and local asset hashes. Generation, QA, and delivery states are recorded separately. |
 | Editable video shot plan and assembly proposal | **Implemented locally** | Video runs retain per-shot intent, source continuity, generation settings, revision history, and a review-only FFmpeg concat proposal. |
 | Listing kits, creative batches, multi-ratio plans, SKU plans | **Workflow implemented** | Planning and per-task dispatch exist; there is no parallel batch executor yet. |
 | Retouch, watermark removal, object removal, face replacement | **Generative best effort** | These use the general image-to-image endpoint plus prompts. There is no dedicated mask or deterministic editing API in this repository. |
@@ -129,9 +129,9 @@ Then:
 
 1. Fill `constraints` and every task prompt in `.miaodashi_output/cup-launch/plan.json`.
 2. Review `prompts.md` and obtain explicit user approval.
-3. Record approval with `approve_run.py`.
+3. Record approval and the selected model/output parameters with `approve_run.py`. Later prompt, parameter, constraint, or local asset changes require renewed approval.
 4. Build exact, review-only client commands with `prepare_dispatch.py`.
-5. Run approved commands one task at a time and record outputs with `record_result.py`.
+5. Run approved commands one task at a time and record outputs plus all four QA dimensions with `record_result.py`. Delivery requires every QA dimension to pass or be explicitly not applicable.
 
 <p align="center">
   <img src="docs/assets/quality-gates.svg" alt="Local plan, prompt, manifest, QA, and dispatch records" width="100%" />

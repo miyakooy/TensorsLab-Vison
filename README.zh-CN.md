@@ -25,7 +25,7 @@
 | 文生视频、图生视频 | **已实现** | Python 客户端调用四个 SeeDance 接口。 |
 | 任务轮询和本地下载 | **已实现** | 查询异步任务状态并保存返回文件。 |
 | 不消耗积分的请求预览 | **已实现** | 两个客户端都支持 `--dry-run`，不需要 API Key。 |
-| 计划、审批、派发、质检记录 | **本地已实现** | 本地脚本输出 JSON/Markdown，并生成准确的客户端命令。 |
+| 计划、审批、派发、质检记录 | **本地已实现** | 审批绑定任务内容、生成参数和本地素材哈希；变化后需重新批准。生成、QA 和交付状态分别记录。 |
 | 可编辑视频分镜与合成方案 | **本地已实现** | 视频任务保留分镜意图、素材衔接、生成参数、修改历史，以及仅供审核的 FFmpeg 拼接方案。 |
 | 主图组、创意批次、多比例、SKU 批量计划 | **编排已实现** | 可以逐任务派发；尚无并行批量执行器。 |
 | 精修、去水印、物体擦除、换脸 | **生成式尽力而为** | 使用通用图生图加提示词，不是专用遮罩或确定性编辑接口。 |
@@ -119,7 +119,7 @@ python skills/miaodashi-workshop/scripts/create_run.py \
   --source ./product-side.jpg
 ```
 
-之后依次补全 `plan.json`、确认 `prompts.md`、执行 `approve_run.py`、生成 `dispatch.json`，最后逐项执行并用 `record_result.py` 登记结果。完整命令见 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)。
+之后依次补全 `plan.json`、确认 `prompts.md`、用 `approve_run.py` 记录获批模型和输出参数、生成 `dispatch.json`，最后逐项执行并用 `record_result.py` 登记生成与四项 QA 结果。提示词、参数、约束或本地素材内容变化后，派发会要求重新批准。完整命令见 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)。
 
 ### 可局部修改的视频分镜
 

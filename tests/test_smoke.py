@@ -187,7 +187,13 @@ class WorkshopSmokeTests(unittest.TestCase):
             plan["tasks"][0]["prompt"] = "Keep the white ceramic cup unchanged on a warm studio set."
             plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-            run_cli(WORKSHOP / "approve_run.py", "--run", run_dir, "--approved-by", "test-user")
+            run_cli(
+                WORKSHOP / "approve_run.py",
+                "--run", run_dir,
+                "--approved-by", "test-user",
+                "--model", "seedreamv45",
+                "--image-resolution", "4:5",
+            )
             run_cli(
                 WORKSHOP / "prepare_dispatch.py",
                 "--run",
@@ -216,9 +222,16 @@ class WorkshopSmokeTests(unittest.TestCase):
                 output,
                 "--qa",
                 "product_truth=pass",
+                "--qa",
+                "visual_quality=pass",
+                "--qa",
+                "text_and_rights=not_applicable",
+                "--qa",
+                "publication_review=pass",
             )
             updated = json.loads(plan_path.read_text(encoding="utf-8"))
             self.assertEqual(updated["status"], "completed")
+            self.assertEqual(updated["tasks"][0]["delivery_status"], "ready")
 
     def test_video_shots_can_be_revised_and_prepared_for_external_assembly(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -266,7 +279,13 @@ class WorkshopSmokeTests(unittest.TestCase):
                     "--output",
                     output,
                     "--qa",
+                    "product_truth=pass",
+                    "--qa",
                     "visual_quality=pass",
+                    "--qa",
+                    "text_and_rights=not_applicable",
+                    "--qa",
+                    "publication_review=pass",
                 )
             run_cli(WORKSHOP / "prepare_assembly.py", "--run", run_dir)
             assembly = json.loads((run_dir / "assemble_plan.json").read_text(encoding="utf-8"))
@@ -294,8 +313,95 @@ class WorkshopSmokeTests(unittest.TestCase):
                 "--replace-approved",
             )
             revised = json.loads(plan_path.read_text(encoding="utf-8"))
-            self.assertEqual(revised["tasks"][0]["status"], "planned")
+            self.assertEqual(revised["tasks"][0]["status"], "needs_approval")
+            self.assertNotIn(first_task, revised["execution"]["approval"]["task_digests"])
             self.assertEqual(len(revised["tasks"][0]["previous_outputs"]), 1)
+            run_cli(
+                WORKSHOP / "prepare_dispatch.py",
+                "--run", run_dir,
+                "--task", first_task,
+                expected=2,
+            )
+            run_cli(
+                WORKSHOP / "approve_run.py",
+                "--run", run_dir,
+                "--approved-by", "test-user",
+                "--task", first_task,
+            )
+            run_cli(WORKSHOP / "prepare_dispatch.py", "--run", run_dir, "--task", first_task)
+
+    def test_approval_rejects_changed_prompt_and_source_content(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = Path(temp_dir)
+            source = temp / "product.jpg"
+            source.write_bytes(b"original fixture")
+            output_root = temp / "runs"
+            run_cli(
+                WORKSHOP / "create_run.py",
+                "--project", "approval-integrity",
+                "--scenario", "listing-kit",
+                "--source", source,
+                "--output-count", 1,
+                "--output-dir", output_root,
+            )
+            run_dir = output_root / "approval-integrity"
+            plan_path = run_dir / "plan.json"
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            plan["constraints"]["immutable_facts"] = ["blue bottle"]
+            plan["constraints"]["brand_anchors"] = ["white background"]
+            plan["tasks"][0]["prompt"] = "Keep the approved blue bottle unchanged."
+            plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            run_cli(WORKSHOP / "approve_run.py", "--run", run_dir, "--approved-by", "reviewer")
+            run_cli(WORKSHOP / "prepare_dispatch.py", "--run", run_dir)
+
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            plan["tasks"][0]["prompt"] = "Change the bottle to red."
+            plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            changed_prompt = run_cli(WORKSHOP / "prepare_dispatch.py", "--run", run_dir, expected=2)
+            self.assertIn("approve it again", changed_prompt.stderr)
+
+            plan["tasks"][0]["prompt"] = "Keep the approved blue bottle unchanged."
+            plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            source.write_bytes(b"changed fixture")
+            changed_asset = run_cli(WORKSHOP / "prepare_dispatch.py", "--run", run_dir, expected=2)
+            self.assertIn("source assets changed", changed_asset.stderr)
+
+    def test_completed_generation_stays_blocked_until_required_qa_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = Path(temp_dir)
+            source = temp / "product.jpg"
+            source.write_bytes(b"test fixture")
+            output_root = temp / "runs"
+            run_cli(
+                WORKSHOP / "create_run.py",
+                "--project", "qa-gate",
+                "--scenario", "listing-kit",
+                "--source", source,
+                "--output-count", 1,
+                "--output-dir", output_root,
+            )
+            run_dir = output_root / "qa-gate"
+            plan_path = run_dir / "plan.json"
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            plan["constraints"]["immutable_facts"] = ["black package"]
+            plan["constraints"]["brand_anchors"] = ["soft light"]
+            plan["tasks"][0]["prompt"] = "Keep the black package accurate."
+            plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            run_cli(WORKSHOP / "approve_run.py", "--run", run_dir, "--approved-by", "reviewer")
+            output = run_dir / "outputs/result.png"
+            output.write_bytes(b"result")
+            run_cli(
+                WORKSHOP / "record_result.py",
+                "--run", run_dir,
+                "--task", "主图",
+                "--status", "completed",
+                "--output", output,
+                "--qa", "visual_quality=pass",
+            )
+            pending = json.loads(plan_path.read_text(encoding="utf-8"))
+            self.assertEqual(pending["status"], "review_pending")
+            self.assertEqual(pending["tasks"][0]["status"], "qa_pending")
+            self.assertEqual(pending["tasks"][0]["delivery_status"], "blocked")
 
 
 if __name__ == "__main__":

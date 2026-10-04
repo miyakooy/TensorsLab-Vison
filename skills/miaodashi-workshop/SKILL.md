@@ -14,7 +14,7 @@ This repository implements the local records and command preparation. It does no
 1. **掌柜 — understand.** Identify the scenario, channel, target deliverables, asset roles and non-negotiable constraints.
 2. **樱酥 — lock anchors.** Record visible product facts, brand direction, output ratios, prohibited changes and the user's supplied rights status.
 3. **茶博士 — plan.** Create one task per image or clip with one primary communication goal. For video, define a shot ID, its narrative intent, source continuity, model settings and editable fields in `plan.json`. Run `create_run.py`; it never makes paid API calls.
-4. **Obtain explicit approval.** Show the user the source-role map, immutable facts, planned prompts, task count, model choice and assumptions. Do not generate before approval.
+4. **Obtain explicit approval.** Show the user the source-role map, immutable facts, planned prompts, task count, model choice and assumptions. Record model and output overrides in `approve_run.py`; approval binds each task to its prompt, constraints, parameters and local asset contents. Do not generate before approval.
 5. **麻薯 — preflight, then execute.** Run `prepare_dispatch.py` to inspect the exact existing-client command for every eligible task. It never calls an API. After review, use the existing `tl-image` or `tl-video` client and retain its parameters and returned task ID.
 6. **汤汤 — review and resume.** Check product truth, visual quality, text/rights and publication readiness. Regenerate only failed tasks; use `revise_shot.py` for a deliberate local shot change and preserve earlier approved output history.
 7. **砚先生 — iterate on request.** Label A/B variants clearly. Do not predict commercial performance without supplied business data.
@@ -87,8 +87,12 @@ Fill `constraints.immutable_facts`, `constraints.brand_anchors` and every task p
 ```bash
 python skills/miaodashi-workshop/scripts/approve_run.py \
   --run .miaodashi_output/spring-jacket-launch \
-  --approved-by "user-confirmed"
+  --approved-by "user-confirmed" \
+  --model seedreamv45 \
+  --image-resolution 4:5
 ```
+
+The approval stores one SHA-256 digest per task and content hashes for local source files. `prepare_dispatch.py` refuses a task if an approved prompt, output-affecting parameter, shared constraint or source file changed. Re-run full approval after changing shared constraints or global dispatch parameters.
 
 For a video run, fill `video_story` and every task's `shot` object before approval. `shot.script_line` records the approved spoken meaning, while `prompt` directs the visual clip. This does not create controlled speech, lip sync, word-level captions, or a final edit. The per-shot `generation` object supplies the default model, ratio, duration and resolution to `prepare_dispatch.py`; CLI flags override it for one dispatch.
 
@@ -119,10 +123,12 @@ python skills/miaodashi-workshop/scripts/record_result.py \
   --output .miaodashi_output/spring-jacket-launch/outputs/hero.png \
   --task-id task_123 \
   --qa product_truth=pass \
-  --qa visual_quality=pass
+  --qa visual_quality=pass \
+  --qa text_and_rights=not_applicable \
+  --qa publication_review=pass
 ```
 
-Use `failed` or `qa_failed` when appropriate. The manifest keeps successful tasks untouched and flags only the failed task for retry. Never write API keys, bearer tokens or raw authorization headers to plans, manifests, notes or errors.
+Use `failed` or `qa_failed` when appropriate. Generation, QA and delivery are recorded separately. All four QA dimensions must pass or be explicitly marked `not_applicable` before a task becomes delivery-ready. The manifest keeps successful tasks untouched and flags only the failed task for retry. Never write API keys, bearer tokens or raw authorization headers to plans, manifests, notes or errors.
 
 ## Revise one video shot and prepare an external assembly handoff
 
@@ -135,6 +141,15 @@ python skills/miaodashi-workshop/scripts/revise_shot.py \
   --reason "Opening needs a closer product reveal" \
   --prompt "[approved replacement visual prompt]" \
   --replace-approved
+```
+
+Revision marks only that task as `needs_approval` and removes its old approval digest. Approve the replacement before preparing its command:
+
+```bash
+python skills/miaodashi-workshop/scripts/approve_run.py \
+  --run .miaodashi_output/cup-launch \
+  --approved-by "user-confirmed" \
+  --task "人物钩子镜头"
 ```
 
 After all video tasks have a local, QA-passed output, prepare—not execute—the proposed concatenation:
