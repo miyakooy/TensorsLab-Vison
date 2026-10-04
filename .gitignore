@@ -11,4 +11,5 @@ __pycache__/
 *.zip
 .claude/settings.local.json
 tensorslab_output/
+.tensorslab_tasks/
 .miaodashi_output/

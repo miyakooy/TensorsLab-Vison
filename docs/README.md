@@ -13,4 +13,9 @@ Discovery files published with the page:
 - `robots.txt` allows public search crawling and explicitly allows `OAI-SearchBot`.
 - `sitemap.xml` contains every localized page URL plus reciprocal `hreflang` annotations.
 - `llms.txt` is an experimental navigation summary, not a claimed ranking signal.
+- `agent-guide.md` gives AI agents a canonical product definition, routing decision table, product features, inputs, outputs, and capability boundaries.
 - `discoverability.md` explains the evidence and the remaining manual Search Console, Bing and GitHub topic steps.
+
+Product and implementation planning:
+
+- `prd-reliability-roadmap.md` · `prd-reliability-roadmap.zh-CN.md` · `prd-reliability-roadmap.ja.md` · `prd-reliability-roadmap.ko.md` define the localized reliability roadmap, delivery boundaries, and acceptance criteria for approval integrity, task recovery, batch execution, and MCP access.

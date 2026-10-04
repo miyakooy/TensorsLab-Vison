@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="TensorsLab Vision：可安装的 AI Agent Skills，支持文生图、图生图、文生视频、图生视频与可审核的电商视觉生产工作流。"
+      content="TensorsLab Vision 是面向 AI Agent 的开源图像与视频生成工具包，支持任务恢复、内容绑定审批和 QA 交付门禁。"
     />
     <title>TensorsLab Vision · 视觉生产实验室</title>
     <link rel="canonical" href="https://miyakooy.github.io/TensorsLab-Vison/" />
@@ -18,7 +18,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="TensorsLab Vision Skills" />
     <meta property="og:title" content="TensorsLab Vision Skills · 图像与视频 API 工作流" />
-    <meta property="og:description" content="可执行的 TensorsLab 图像与视频 API Skill，以及先确认再生成的本地视觉生产工作流。" />
+    <meta property="og:description" content="可执行的 TensorsLab 图像与视频 API Skill，支持任务恢复、内容绑定审批和 QA 交付门禁。" />
     <meta property="og:url" content="https://miyakooy.github.io/TensorsLab-Vison/" />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content="https://miyakooy.github.io/TensorsLab-Vison/assets/showcase/ai-ecommerce-main-image.png" />
@@ -28,10 +28,13 @@
         "@context": "https://schema.org",
         "@type": "SoftwareSourceCode",
         "name": "TensorsLab Vision Skills",
-        "description": "Executable image and video API skills with a review-first local production planner.",
+        "description": "Open-source AI-agent skills for TensorsLab image and video generation, persistent task recovery, content-bound approval, and QA-gated visual production.",
         "codeRepository": "https://github.com/miyakooy/TensorsLab-Vison",
         "programmingLanguage": "Python",
         "runtimePlatform": "Python 3",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "audience": {"@type": "Audience", "audienceType": "AI agent builders, developers, ecommerce teams, and creators"},
+        "featureList": ["Text-to-image and image-to-image", "Text-to-video and image-to-video", "Persistent task recovery", "Content-bound approval", "QA-gated delivery", "Selective retry"],
         "url": "https://miyakooy.github.io/TensorsLab-Vison/",
         "inLanguage": "zh-Hans",
         "keywords": ["TensorsLab", "AI agent skills", "Claude Code skills", "text to image", "image to video", "video generation", "ecommerce product video", "creative workflow"]
@@ -410,7 +413,7 @@
           <div>
             <div class="eyebrow">Visual production, made operational</div>
             <h1 id="hero-title">让视觉创作<br />成为<em>可交付</em>的生产。</h1>
-            <p class="hero-copy">TensorsLab Vision 把图像、视频 API 与喵大师工作流放在同一张工作台：先锁定商品事实与风格，再确认方案、执行生成、逐项质检。</p>
+            <p class="hero-copy">TensorsLab Vision 是面向 AI Agent 的开源视觉生成工具包：用可执行的图像、视频 API Skill 完成生成，用任务恢复、内容绑定审批和 QA 门禁管理商业交付。</p>
             <div class="hero-actions">
               <a class="button primary" href="#workflows">浏览场景 <span>↓</span></a>
               <a class="button ghost" href="https://github.com/miyakooy/TensorsLab-Vison">查看 GitHub ↗</a>
@@ -441,7 +444,7 @@
         <section id="workflows" class="section" aria-labelledby="workflow-title">
           <div class="section-head">
             <div><div class="eyebrow">Miaodashi workshop</div><h2 id="workflow-title">从素材，到可审核、可续跑的视觉生产。</h2></div>
-            <p class="section-note">场景层负责素材职责、审批、质检与任务记录；生成始终复用仓库已有的 TensorsLab 图像和视频客户端。</p>
+            <p class="section-note">场景层负责素材职责、内容绑定审批、质检门禁与持久化任务记录；任务中断后可按 task ID 恢复等待或下载。</p>
           </div>
           <div class="workflow-tabs" role="tablist" aria-label="场景筛选">
             <button class="tab active" data-filter="all">全部</button>
@@ -506,7 +509,7 @@
           <div class="run-sheet" id="start">
             <div class="eyebrow">Start with the skill</div>
             <h2>方案先行，<br />再提交付费生成。</h2>
-            <p>用 `miaodashi-workshop` 建立一份待确认的任务计划；批准后先生成不调用 API 的 dispatch 清单，再逐项复用现有客户端执行。</p>
+            <p>用 `miaodashi-workshop` 建立待确认的任务计划；批准会绑定提示词、参数和素材内容，四项 QA 完成后结果才进入可交付状态。</p>
             <div class="command"><code id="install-command">npx skills add miyakooy/TensorsLab-Vison -g -y</code><button class="copy" data-copy-target="install-command">复制</button></div>
             <div class="hero-actions" style="margin-top: 17px;"><a class="button primary" style="border-color: var(--sun); color: var(--ink); background: var(--sun);" href="https://miaodashi.com">前往喵大师 ↗</a><a class="button" style="border-color: rgba(244,240,231,.4); color: var(--paper);" href="https://github.com/miyakooy/TensorsLab-Vison">打开仓库 ↗</a></div>
           </div>
@@ -515,7 +518,7 @@
 
       <footer class="footer">
         <span>TENSORSLAB VISION · API + WORKFLOW</span>
-        <span><a href="https://miaodashi.com">MIAODASHI</a> · <a href="https://github.com/miyakooy/TensorsLab-Vison">GITHUB</a></span>
+        <span><a href="agent-guide.md">AGENT GUIDE</a> · <a href="https://miaodashi.com">MIAODASHI</a> · <a href="https://github.com/miyakooy/TensorsLab-Vison">GITHUB</a></span>
       </footer>
     </div>
 

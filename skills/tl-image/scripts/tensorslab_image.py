@@ -15,7 +15,19 @@ import mimetypes
 from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import urlparse
-from typing import Optional, List
+from typing import Callable, Optional, List
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from tensorslab_task_state import (  # noqa: E402
+    DEFAULT_STATE_DIR,
+    load_task_record,
+    new_task_record,
+    operation_result,
+    save_task_record,
+)
 
 try:
     import requests
@@ -29,6 +41,10 @@ except ImportError:
 class TensorsLabAPIError(Exception):
     """TensorsLab API error with context."""
     pass
+
+
+class TensorsLabSubmissionUnknown(TensorsLabAPIError):
+    """The request may have reached the server, but no task ID was received."""
 
 
 logger = logging.getLogger(__name__)
@@ -251,21 +267,21 @@ def generate_image(
 
             response = _SESSION.post(endpoint, headers=headers, files=files, timeout=60)
         except requests.exceptions.RequestException as e:
-            raise TensorsLabAPIError(f"Network error: {e}") from e
+            raise TensorsLabSubmissionUnknown(f"Submission outcome is unknown after network error: {e}") from e
 
     logger.debug(f"API Response ({response.status_code}): {response.text}")
 
     try:
         result = response.json()
     except ValueError:
-        raise TensorsLabAPIError(
+        raise TensorsLabSubmissionUnknown(
             f"Invalid JSON response (HTTP {response.status_code}): {response.text}"
         )
 
     if result.get("code") == 1000:
         task_id = result.get("data", {}).get("taskid")
         if not task_id:
-            raise TensorsLabAPIError("API reported success but returned no task ID")
+            raise TensorsLabSubmissionUnknown("API reported success but returned no task ID")
         logger.info(f"✅ Task created successfully! Task ID: {task_id}")
         return task_id
 
@@ -304,6 +320,104 @@ def query_task_status(task_id: str, api_key: Optional[str] = None) -> Optional[d
     return None
 
 
+def generation_status(task_data: dict) -> str:
+    return {
+        1: "queued",
+        2: "processing",
+        3: "completed",
+        4: "failed",
+    }.get(task_data.get("image_status"), "unknown")
+
+
+def update_record_from_status(record: dict, task_data: dict) -> None:
+    status = generation_status(task_data)
+    record["generation_status"] = status
+    record["server_status"] = task_data.get("image_status")
+    record["result_urls"] = list(task_data.get("url", []) or [])
+    record["error"] = None
+    record["next_action"] = {
+        "queued": "wait",
+        "processing": "wait",
+        "completed": "download",
+        "failed": None,
+        "unknown": "status",
+    }[status]
+    if status == "failed":
+        record["error"] = {
+            "code": "GENERATION_FAILED",
+            "message": task_data.get("error_message", "Unknown error"),
+        }
+
+
+def wait_for_completion(
+    task_id: str,
+    api_key: Optional[str] = None,
+    timeout: int = 300,
+    initial_interval: int = POLL_INITIAL_INTERVAL,
+    on_status: Optional[Callable[[dict], None]] = None,
+) -> dict:
+    """Wait for a terminal server state without downloading or resubmitting."""
+    if api_key is None:
+        api_key = get_api_key()
+    start_time = time.time()
+    interval = initial_interval
+    logger.info("⏳ Waiting for image generation to complete...")
+    while time.time() - start_time < timeout:
+        task_data = query_task_status(task_id, api_key)
+        if not task_data:
+            time.sleep(interval)
+            interval = min(interval * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL)
+            continue
+        if on_status is not None:
+            on_status(task_data)
+        status = task_data.get("image_status")
+        elapsed = int(time.time() - start_time)
+        logger.info(f"🔄 Status: {IMAGE_STATUS.get(status, 'Unknown')} (elapsed: {elapsed}s)")
+        if status == 3:
+            return task_data
+        if status == 4:
+            raise TensorsLabAPIError(
+                f"Task failed: {task_data.get('error_message', 'Unknown error')}"
+            )
+        time.sleep(interval)
+        interval = min(interval * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL)
+    raise TensorsLabAPIError(f"Timeout waiting for task completion (waited {timeout}s)")
+
+
+def download_task_outputs(task_id: str, task_data: dict, output_dir: Path) -> List[str]:
+    """Download a completed task's current result URLs without creating a task."""
+    if generation_status(task_data) != "completed":
+        raise TensorsLabAPIError("Task is not completed; use status or wait before download")
+    ensure_output_dir(output_dir)
+    urls = list(task_data.get("url", []) or [])
+    downloaded_files: List[str] = []
+    for i, url in enumerate(urls):
+        output_path = output_dir / f"{task_id}_{i}"
+        logger.info(f"📥 Downloading image {i + 1}/{len(urls)}")
+        final_path = download_image(url, output_path)
+        if final_path:
+            downloaded_files.append(str(final_path))
+    return downloaded_files
+
+
+def update_record_from_download(record: dict, downloaded: List[str]) -> None:
+    record["outputs"] = [str(Path(path).expanduser().resolve()) for path in downloaded]
+    expected = len(record.get("result_urls", []))
+    if expected == 0:
+        record["download_status"] = "failed"
+        record["error"] = {"code": "NO_OUTPUTS", "message": "Completed task returned no output URLs"}
+    elif len(downloaded) == expected:
+        record["download_status"] = "completed"
+        record["error"] = None
+    elif downloaded:
+        record["download_status"] = "partial"
+        record["error"] = {"code": "DOWNLOAD_INCOMPLETE", "message": "One or more outputs could not be downloaded"}
+    else:
+        record["download_status"] = "failed"
+        record["error"] = {"code": "DOWNLOAD_FAILED", "message": "No outputs could be downloaded"}
+    record["next_action"] = None if record["download_status"] == "completed" else "download"
+
+
 def wait_and_download(
     task_id: str,
     api_key: Optional[str] = None,
@@ -317,52 +431,16 @@ def wait_and_download(
     if output_dir is None:
         output_dir = DEFAULT_OUTPUT_DIR
 
-    ensure_output_dir(output_dir)
-    downloaded_files: List[str] = []
-    start_time = time.time()
-    interval = initial_interval
-
-    logger.info("⏳ Waiting for image generation to complete...")
-
-    while time.time() - start_time < timeout:
-        task_data = query_task_status(task_id, api_key)
-        if not task_data:
-            time.sleep(interval)
-            interval = min(interval * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL)
-            continue
-
-        status = task_data.get("image_status")
-        elapsed = int(time.time() - start_time)
-        logger.info(
-            f"🔄 Status: {IMAGE_STATUS.get(status, 'Unknown')} (elapsed: {elapsed}s)"
-        )
-
-        if status == 3:  # Completed
-            logger.info("✅ Task completed!")
-            urls = task_data.get("url", [])
-            if not urls:
-                logger.warning("⚠️ No images returned")
-                return downloaded_files
-
-            for i, url in enumerate(urls):
-                output_path = output_dir / f"{task_id}_{i}"
-                logger.info(f"📥 Downloading image {i + 1}/{len(urls)}")
-                final_path = download_image(url, output_path)
-                if final_path:
-                    downloaded_files.append(str(final_path))
-            return downloaded_files
-
-        if status == 4:  # Failed
-            error_msg = task_data.get("error_message", "Unknown error")
-            raise TensorsLabAPIError(f"Task failed: {error_msg}")
-
-        time.sleep(interval)
-        interval = min(interval * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL)
-
-    raise TensorsLabAPIError(f"Timeout waiting for task completion (waited {timeout}s)")
+    task_data = wait_for_completion(
+        task_id,
+        api_key=api_key,
+        timeout=timeout,
+        initial_interval=initial_interval,
+    )
+    return download_task_outputs(task_id, task_data, output_dir)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generate images using TensorsLab API",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -374,7 +452,19 @@ Examples:
         """,
     )
 
-    parser.add_argument("prompt", help="Text prompt for image generation")
+    parser.add_argument("prompt", nargs="?", help="Text prompt for image generation")
+    parser.add_argument(
+        "--operation",
+        choices=["run", "submit", "status", "wait", "download"],
+        default="run",
+        help="run submits, waits, and downloads; other operations are independently resumable",
+    )
+    parser.add_argument("--task-id", help="Existing task ID for status, wait, or download")
+    parser.add_argument(
+        "--state-dir",
+        default=str(DEFAULT_STATE_DIR),
+        help="Directory for durable task records (default: ./.tensorslab_tasks)",
+    )
     parser.add_argument(
         "--model", "-m",
         choices=list(MODEL_ENDPOINTS.keys()),
@@ -421,6 +511,7 @@ Examples:
         help="Output directory path (default: ./tensorslab_output)",
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--json", action="store_true", help="Print a structured JSON result for the run operation")
     parser.add_argument(
         "--dry-run", action="store_true",
         help="Validate inputs and print the request plan without using an API key",
@@ -434,22 +525,14 @@ Examples:
     )
 
     output_dir = Path(args.output_dir) if args.output_dir else DEFAULT_OUTPUT_DIR
+    state_dir = Path(args.state_dir)
     resolution = args.resolution or ("1024*1024" if args.model == "zimage" else "2K")
 
     try:
-        validate_inputs(
-            prompt=args.prompt,
-            model=args.model,
-            resolution=resolution,
-            batch_size=args.batch_size,
-            seed=args.seed,
-            source_images=args.sources,
-            image_url=args.image_url,
-            poll_interval=args.poll_interval,
-            timeout=args.timeout,
-        )
-        if args.dry_run:
-            print(json.dumps(request_preview(
+        if args.operation in {"run", "submit"}:
+            if not args.prompt:
+                raise TensorsLabAPIError("A prompt is required for run or submit")
+            validate_inputs(
                 prompt=args.prompt,
                 model=args.model,
                 resolution=resolution,
@@ -457,34 +540,185 @@ Examples:
                 seed=args.seed,
                 source_images=args.sources,
                 image_url=args.image_url,
-            ), ensure_ascii=False, indent=2))
-            return
-        task_id = generate_image(
-            prompt=args.prompt,
-            model=args.model,
-            resolution=resolution,
-            batch_size=args.batch_size,
-            seed=args.seed,
-            source_images=args.sources,
-            image_url=args.image_url,
-            api_key=args.api_key,
-        )
+                poll_interval=args.poll_interval,
+                timeout=args.timeout,
+            )
+            preview = request_preview(
+                prompt=args.prompt,
+                model=args.model,
+                resolution=resolution,
+                batch_size=args.batch_size,
+                seed=args.seed,
+                source_images=args.sources,
+                image_url=args.image_url,
+            )
+            if args.dry_run:
+                print(json.dumps(preview, ensure_ascii=False, indent=2))
+                return 0
+            request_record = dict(preview)
+            request_record["submits_request"] = True
+            try:
+                task_id = generate_image(
+                    prompt=args.prompt,
+                    model=args.model,
+                    resolution=resolution,
+                    batch_size=args.batch_size,
+                    seed=args.seed,
+                    source_images=args.sources,
+                    image_url=args.image_url,
+                    api_key=args.api_key,
+                )
+            except TensorsLabSubmissionUnknown as error:
+                record = new_task_record(
+                    kind="image",
+                    task_id=None,
+                    request=request_record,
+                    output_dir=output_dir,
+                    submission_status="unknown",
+                )
+                record["error"] = {"code": "SUBMISSION_UNKNOWN", "message": str(error)}
+                record["next_action"] = "Check the provider dashboard; do not automatically resubmit."
+                path = save_task_record(state_dir, record)
+                print(json.dumps(operation_result(record, args.operation, path), ensure_ascii=False, indent=2))
+                return 1
+            except TensorsLabAPIError as error:
+                logger.error(f"❌ {error}")
+                record = new_task_record(
+                    kind="image",
+                    task_id=None,
+                    request=request_record,
+                    output_dir=output_dir,
+                    submission_status="rejected",
+                )
+                record["generation_status"] = "failed"
+                record["error"] = {"code": "SUBMISSION_REJECTED", "message": str(error)}
+                record["next_action"] = None
+                path = save_task_record(state_dir, record)
+                if args.operation == "submit" or args.json:
+                    print(json.dumps(operation_result(record, args.operation, path), ensure_ascii=False, indent=2))
+                return 1
+            record = new_task_record(
+                kind="image",
+                task_id=task_id,
+                request=request_record,
+                output_dir=output_dir,
+            )
+            record["next_action"] = "wait"
+            path = save_task_record(state_dir, record)
+            if args.operation == "submit":
+                print(json.dumps(operation_result(record, "submit", path), ensure_ascii=False, indent=2))
+                return 0
 
-        downloaded = wait_and_download(
-            task_id=task_id,
-            api_key=args.api_key,
-            timeout=args.timeout,
-            output_dir=output_dir,
-            initial_interval=args.poll_interval,
-        )
+            def persist_status(task_data: dict) -> None:
+                update_record_from_status(record, task_data)
+                save_task_record(state_dir, record)
 
-        logger.info(f"\n🎉 All done! Downloaded {len(downloaded)} image(s) to {output_dir}/")
-        for f in downloaded:
-            logger.info(f"   - {f}")
+            try:
+                task_data = wait_for_completion(
+                    task_id,
+                    api_key=args.api_key,
+                    timeout=args.timeout,
+                    initial_interval=args.poll_interval,
+                    on_status=persist_status,
+                )
+            except TensorsLabAPIError as error:
+                if record.get("generation_status") != "failed":
+                    record["error"] = {"code": "WAIT_TIMEOUT", "message": str(error)}
+                    record["next_action"] = "wait"
+                path = save_task_record(state_dir, record)
+                if args.json:
+                    print(json.dumps(operation_result(record, "run", path), ensure_ascii=False, indent=2))
+                raise
+            downloaded = download_task_outputs(task_id, task_data, output_dir)
+            update_record_from_download(record, downloaded)
+            path = save_task_record(state_dir, record)
+            if args.json:
+                print(json.dumps(operation_result(record, "run", path), ensure_ascii=False, indent=2))
+            logger.info(f"\n🎉 All done! Downloaded {len(downloaded)} image(s) to {output_dir}/")
+            return 0
+
+        if args.dry_run:
+            raise TensorsLabAPIError("--dry-run is available only for run or submit")
+        if not args.task_id:
+            raise TensorsLabAPIError("--task-id is required for status, wait, or download")
+        record = load_task_record(state_dir, args.task_id)
+        if record is not None:
+            if record.get("kind") != "image" or record.get("task_id") != args.task_id:
+                raise TensorsLabAPIError("Stored task record does not match this image task")
+        else:
+            record = new_task_record(
+                kind="image",
+                task_id=args.task_id,
+                request={"source": "existing_task_id"},
+                output_dir=output_dir,
+                submission_status="external",
+            )
+        if args.output_dir is None and record.get("output_dir"):
+            output_dir = Path(record["output_dir"])
+
+        if args.operation == "status":
+            task_data = query_task_status(args.task_id, args.api_key)
+            if not task_data:
+                record["error"] = {"code": "QUERY_FAILED", "message": "Task status could not be read"}
+                record["next_action"] = "status"
+                path = save_task_record(state_dir, record)
+                print(json.dumps(operation_result(record, "status", path), ensure_ascii=False, indent=2))
+                return 1
+            update_record_from_status(record, task_data)
+            path = save_task_record(state_dir, record)
+            print(json.dumps(operation_result(record, "status", path), ensure_ascii=False, indent=2))
+            return 1 if record["generation_status"] == "failed" else 0
+
+        if args.operation == "wait":
+            def persist_wait_status(task_data: dict) -> None:
+                update_record_from_status(record, task_data)
+                save_task_record(state_dir, record)
+
+            try:
+                task_data = wait_for_completion(
+                    args.task_id,
+                    api_key=args.api_key,
+                    timeout=args.timeout,
+                    initial_interval=args.poll_interval,
+                    on_status=persist_wait_status,
+                )
+                update_record_from_status(record, task_data)
+                path = save_task_record(state_dir, record)
+                print(json.dumps(operation_result(record, "wait", path), ensure_ascii=False, indent=2))
+                return 0
+            except TensorsLabAPIError as error:
+                if record.get("generation_status") != "failed":
+                    record["error"] = {"code": "WAIT_TIMEOUT", "message": str(error)}
+                    record["next_action"] = "wait"
+                path = save_task_record(state_dir, record)
+                print(json.dumps(operation_result(record, "wait", path), ensure_ascii=False, indent=2))
+                return 1
+
+        task_data = query_task_status(args.task_id, args.api_key)
+        if not task_data:
+            record["error"] = {"code": "QUERY_FAILED", "message": "Task status could not be read"}
+            record["next_action"] = "download"
+            path = save_task_record(state_dir, record)
+            print(json.dumps(operation_result(record, "download", path), ensure_ascii=False, indent=2))
+            return 1
+        update_record_from_status(record, task_data)
+        if record["generation_status"] != "completed":
+            record["error"] = {"code": "NOT_COMPLETED", "message": "Task is not completed"}
+            path = save_task_record(state_dir, record)
+            print(json.dumps(operation_result(record, "download", path), ensure_ascii=False, indent=2))
+            return 1
+        downloaded = download_task_outputs(args.task_id, task_data, output_dir)
+        update_record_from_download(record, downloaded)
+        path = save_task_record(state_dir, record)
+        print(json.dumps(operation_result(record, "download", path), ensure_ascii=False, indent=2))
+        return 0 if record["download_status"] == "completed" else 1
     except TensorsLabAPIError as e:
         logger.error(f"❌ {e}")
-        sys.exit(1)
+        return 1
+    except (OSError, ValueError) as e:
+        logger.error(f"❌ Task record error: {e}")
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

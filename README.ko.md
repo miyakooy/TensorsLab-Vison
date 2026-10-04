@@ -11,6 +11,26 @@
   <img src="docs/assets/api-scenes.ko.svg" alt="TensorsLab 이미지 API, 비디오 API 및 검토 우선 워크플로" width="100%" />
 </p>
 
+## TensorsLab Vision이란?
+
+TensorsLab Vision은 AI Agent가 TensorsLab API로 이미지와 영상을 생성하고, 로컬 승인·작업 복구·QA 기록으로 상업용 시각 제작을 관리하도록 돕는 오픈소스 도구 모음입니다. 실제 실행, 검토 가능한 과정, 중단 후 재개가 필요한 개발자, Agent 빌더, 이커머스 팀과 크리에이터를 위한 프로젝트입니다.
+
+주요 특징:
+
+- **실행 가능한 API Skill:** Text-to-Image, Image-to-Image, Text-to-Video, Image-to-Video 실제 클라이언트를 제공합니다.
+- **유료 호출 전 검토:** `--dry-run`으로 요청을 확인하고 승인을 프롬프트, 파라미터, 제약과 원본 파일에 연결합니다.
+- **재개 가능한 작업:** 접수된 task ID를 즉시 저장하고 새 생성을 만들지 않은 채 `status`, `wait`, `download`를 재개합니다.
+- **검토 우선 납품:** 생성, QA, 납품 상태를 분리하고 필수 검사를 통과한 결과만 납품 가능하게 표시합니다.
+- **명확한 기능 경계:** 구현 코드, 워크플로 계획, 생성형 최선 노력, 외부 도구가 필요한 단계를 구분합니다.
+
+### Agent가 선택할 Skill
+
+| 사용자 목적 | Skill | 결과 |
+| --- | --- | --- |
+| 이미지 생성 또는 변환 | `tl-image` | 검증된 이미지 작업, 영구 작업 기록, 로컬 파일, 구조화 JSON |
+| 영상 생성 또는 정지 이미지 애니메이션 | `tl-video` | 검증된 영상 작업, 영구 작업 기록, 로컬 파일, 구조화 JSON |
+| 이커머스·캠페인 제작 계획 | `miaodashi-workshop` | 검토 가능한 계획, 내용 연결 승인, 실행 명령, 작업별 QA와 선택 재시도 기록 |
+
 이 저장소에는 소스를 확인하고 설치할 수 있는 세 가지 Skill이 있습니다.
 
 - `tl-image`: 텍스트-이미지 및 이미지-이미지 작업을 제출하고 상태를 확인한 뒤 결과를 저장합니다.
@@ -25,9 +45,9 @@
 | --- | --- | --- |
 | 텍스트-이미지 / 이미지-이미지 | **구현됨** | SeeDream V4/V4.5/V5 Lite 및 Z-Image API를 호출합니다. |
 | 텍스트-비디오 / 이미지-비디오 | **구현됨** | 네 가지 SeeDance API를 호출합니다. |
-| 상태 폴링 및 로컬 다운로드 | **구현됨** | 비동기 작업을 확인하고 반환 파일을 저장합니다. |
+| 작업 저장·복구·로컬 다운로드 | **구현됨** | 접수된 작업 ID를 즉시 저장하고 `submit`, `status`, `wait`, `download` 및 JSON 결과를 제공합니다. |
 | API 호출 없는 미리보기 | **구현됨** | `--dry-run`은 API Key나 크레딧을 사용하지 않습니다. |
-| 계획 → 승인 → 명령 → QA | **로컬 구현됨** | JSON/Markdown 기록과 정확한 명령을 생성합니다. |
+| 계획 → 승인 → 명령 → QA | **로컬 구현됨** | 승인은 작업 내용, 생성 파라미터, 로컬 자산 해시에 연결됩니다. 생성, QA, 납품 상태는 별도로 기록합니다. |
 | 편집 가능한 비디오 샷 계획 | **로컬 구현됨** | 샷 ID, 의도, 연결, 생성 설정, 수정 이력 및 검토용 FFmpeg 연결 제안을 보존합니다. |
 | 상품 이미지 세트, 여러 비율, SKU 계획 | **워크플로 구현됨** | 작업별 실행은 가능하지만 병렬 배치 실행기는 없습니다. |
 | 리터치, 워터마크·객체 제거, 얼굴 교체 | **생성형 최선 노력** | 일반 이미지-이미지와 프롬프트를 사용하며 전용 마스크 API가 아닙니다. |
@@ -102,7 +122,9 @@ API Key는 [TensorsLab Console](https://tensorai.tensorslab.com/)에서 받을 �
   <img src="docs/assets/workshop-flow.ko.svg" alt="에셋, 사실 고정, 프롬프트 계획, 생성, QA 및 납품 흐름" width="100%" />
 </p>
 
-전체 과정은 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)를 참고하세요.
+전체 과정은 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)를 참고하세요. 승인 후 프롬프트, 파라미터, 제약 또는 로컬 자산이 바뀌면 다시 승인해야 합니다. 네 가지 QA 항목이 모두 통과하거나 명시적으로 해당 없음으로 표시되어야 납품할 수 있습니다.
+
+우선순위와 다음 구현 단계는 [신뢰성 로드맵](docs/prd-reliability-roadmap.ko.md)에 정리되어 있습니다.
 
 `ecommerce-spokesperson-video`, `product-comparison-video`, `tourism-narrative-video`는 `plan.json`에서 각 샷을 따로 수정하고 다시 생성할 수 있습니다. `prepare_assembly.py`는 검토용 `concat.txt`와 FFmpeg 제안만 만들며 렌더링하지 않습니다. 음성, 립싱크, 자막, 분할 화면 및 최종 편집은 외부 후반 작업입니다.
 
@@ -126,4 +148,5 @@ python -m unittest discover -s tests -v
 - [비디오 Skill](skills/tl-video/SKILL.md)
 - [커뮤니티 작품](examples/README.ko.md) · [기여 가이드](CONTRIBUTING.md)
 - [GEO / 검색 노출 가이드](docs/discoverability.md)
+- [AI Agent용 제품 정보 및 라우팅 가이드](docs/agent-guide.md)
 - [GitHub Pages 한국어](https://miyakooy.github.io/TensorsLab-Vison/ko/)

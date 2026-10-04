@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from workflow_state import approval_errors
+
 
 def read_json(path: Path) -> dict[str, Any]:
     try:
@@ -49,11 +51,19 @@ def main() -> int:
         print("Error: prepare_assembly.py only accepts a video run", file=sys.stderr)
         return 2
 
+    tasks = plan.get("tasks", [])
+    approval = plan.get("execution", {}).get("approval", {})
+    approval_problem = approval_errors(plan, tasks, approval.get("parameters", {}))
+    if approval_problem:
+        print("Assembly approval check failed:", file=sys.stderr)
+        print("\n".join(f"- {error}" for error in approval_problem), file=sys.stderr)
+        return 2
+
     clips: list[dict[str, str]] = []
     errors: list[str] = []
-    for task in plan.get("tasks", []):
-        if task.get("status") != "completed":
-            errors.append(f"{task.get('name', '<unnamed>')} is not completed")
+    for task in tasks:
+        if task.get("delivery_status") != "ready":
+            errors.append(f"{task.get('name', '<unnamed>')} is not delivery-ready after QA")
             continue
         outputs = task.get("outputs", [])
         if not outputs:

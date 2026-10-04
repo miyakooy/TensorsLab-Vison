@@ -16,8 +16,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from workflow_state import approval_errors, approved_parameters, write_json_atomic
 
-RUNNABLE_PLAN_STATUSES = {"approved_for_execution", "in_progress", "needs_attention"}
+
+RUNNABLE_PLAN_STATUSES = {"approved_for_execution", "in_progress", "needs_attention", "review_pending", "needs_approval"}
 RUNNABLE_TASK_STATUSES = {"planned", "failed", "qa_failed"}
 DIRECT_EXECUTION_LEVELS = {"direct_api", "direct_api_with_review", "direct_api_after_sample"}
 
@@ -35,7 +37,7 @@ def read_json(path: Path) -> dict[str, Any]:
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_json_atomic(path, value)
 
 
 def parse_args() -> argparse.Namespace:
@@ -133,7 +135,15 @@ def command_for_task(plan: dict[str, Any], task: dict[str, Any], args: argparse.
     if errors:
         return [], errors
 
-    command = [sys.executable, str(client_path(kind)), prompt, "--output-dir", str(run_dir / "outputs")]
+    command = [
+        sys.executable,
+        str(client_path(kind)),
+        prompt,
+        "--operation", "run",
+        "--output-dir", str(run_dir / "outputs"),
+        "--state-dir", str(run_dir / "task_records"),
+        "--json",
+    ]
     for source in local_paths:
         command.extend(["--source", source])
     if urls:
@@ -197,28 +207,52 @@ def main() -> int:
         print("Error: this run has no planned, failed, or qa_failed tasks to dispatch", file=sys.stderr)
         return 2
 
+    approval = execution.get("approval", {})
+    stored_parameters = approval.get("parameters", {})
+    requested_parameters = approved_parameters(args)
+    parameters = {
+        key: requested_parameters[key] if requested_parameters[key] is not None else stored_parameters.get(key)
+        for key in requested_parameters
+    }
+    errors = approval_errors(plan, tasks, parameters)
+    if errors:
+        print("Approval check failed:", file=sys.stderr)
+        print("\n".join(f"- {error}" for error in errors), file=sys.stderr)
+        return 2
+    for key, value in parameters.items():
+        setattr(args, key, value)
+
     prepared: list[dict[str, Any]] = []
-    errors: list[str] = []
+    errors = []
     for task in tasks:
         command, task_errors = command_for_task(plan, task, args, run_dir)
         if task_errors:
             errors.extend(f"{task.get('name', '<unnamed>')}: {error}" for error in task_errors)
             continue
-        prepared.append({"task": task["name"], "status": task["status"], "command": command, "shell": shlex.join(command)})
+        prepared.append({
+            "task": task["name"],
+            "status": task["status"],
+            "approval_digest": approval["task_digests"][task["name"]],
+            "command": command,
+            "shell": shlex.join(command),
+        })
     if errors:
         print("Preflight failed:", file=sys.stderr)
         print("\n".join(f"- {error}" for error in errors), file=sys.stderr)
         return 2
 
     dispatch = {
-        "schema_version": 1,
+        "schema_version": 2,
         "project": plan.get("project"),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "mode": "review_only_no_api_call",
         "run_status": plan.get("status"),
         "client": execution.get("skill"),
+        "approval_format": approval.get("format"),
+        "approved_parameters": parameters,
+        "task_record_directory": str(run_dir / "task_records"),
         "commands": prepared,
-        "next_step": "Review these commands, then invoke the existing TensorsLab client manually for each task and record the result with record_result.py.",
+        "next_step": "Review and run each command. The client writes a durable task record; pass its record_path to record_result.py after QA.",
     }
     write_json(run_dir / "dispatch.json", dispatch)
     print(f"Prepared {len(prepared)} review-only dispatch command(s): {run_dir / 'dispatch.json'}")

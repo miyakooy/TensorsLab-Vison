@@ -11,6 +11,26 @@
   <img src="docs/assets/api-scenes.zh-CN.svg" alt="TensorsLab 图像 API、视频 API 与审核优先的工作流架构" width="100%" />
 </p>
 
+## TensorsLab Vision 是什么？
+
+TensorsLab Vision 是一个面向 AI Agent 的开源视觉生成工具包。它让 Agent 通过 TensorsLab API 生成图片和视频，并用本地计划、审批、任务恢复和质检记录管理商业视觉生产。适合需要“能实际执行、过程可检查、任务可续跑”的开发者、Agent 构建者、电商团队和创作者。
+
+产品特色：
+
+- **可执行的 API Skill：**提供真实的文生图、图生图、文生视频和图生视频客户端，不只是提示词示例。
+- **付费调用前可检查：**先用 `--dry-run` 预览；审批会绑定提示词、参数、约束和源文件，变化后必须重新批准。
+- **任务中断可恢复：**任务被接受后立即保存 task ID，可单独执行 `status`、`wait`、`download`，不会重复创建付费生成。
+- **先质检再交付：**生成、QA、交付状态分开记录，必要检查通过后才标记为可交付。
+- **能力边界透明：**明确区分已实现代码、编排能力、生成式尽力而为和需要外部工具的步骤。
+
+### Agent 应该选择哪个 Skill？
+
+| 用户需求 | Skill | 产出 |
+| --- | --- | --- |
+| 生成或变换图片 | `tl-image` | 已校验的图片任务、持久化任务记录、本地文件和结构化 JSON 结果 |
+| 生成视频或让静态图片动起来 | `tl-video` | 已校验的视频任务、持久化任务记录、本地文件和结构化 JSON 结果 |
+| 规划电商或营销视觉生产 | `miaodashi-workshop` | 可审核计划、内容绑定审批、精确派发命令、逐任务 QA 与选择性重试记录 |
+
 - `tl-image`：提交文生图或图生图任务，轮询状态并下载结果。
 - `tl-video`：提交文生视频或图生视频任务，轮询状态并下载结果。
 - `miaodashi-workshop`：在本地创建计划、审批记录、调用命令、质检记录和失败重试状态；生成阶段复用前两个客户端。
@@ -23,9 +43,9 @@
 | --- | --- | --- |
 | 文生图、图生图 | **已实现** | Python 客户端调用 SeeDream V4/V4.5/V5 Lite 与 Z-Image 接口。 |
 | 文生视频、图生视频 | **已实现** | Python 客户端调用四个 SeeDance 接口。 |
-| 任务轮询和本地下载 | **已实现** | 查询异步任务状态并保存返回文件。 |
+| 任务持久化、恢复与本地下载 | **已实现** | 接受任务后立即保存 task ID，并提供独立的 `submit`、`status`、`wait`、`download` 操作和 JSON 结果。 |
 | 不消耗积分的请求预览 | **已实现** | 两个客户端都支持 `--dry-run`，不需要 API Key。 |
-| 计划、审批、派发、质检记录 | **本地已实现** | 本地脚本输出 JSON/Markdown，并生成准确的客户端命令。 |
+| 计划、审批、派发、质检记录 | **本地已实现** | 审批绑定任务内容、生成参数和本地素材哈希；变化后需重新批准。生成、QA 和交付状态分别记录。 |
 | 可编辑视频分镜与合成方案 | **本地已实现** | 视频任务保留分镜意图、素材衔接、生成参数、修改历史，以及仅供审核的 FFmpeg 拼接方案。 |
 | 主图组、创意批次、多比例、SKU 批量计划 | **编排已实现** | 可以逐任务派发；尚无并行批量执行器。 |
 | 精修、去水印、物体擦除、换脸 | **生成式尽力而为** | 使用通用图生图加提示词，不是专用遮罩或确定性编辑接口。 |
@@ -119,7 +139,9 @@ python skills/miaodashi-workshop/scripts/create_run.py \
   --source ./product-side.jpg
 ```
 
-之后依次补全 `plan.json`、确认 `prompts.md`、执行 `approve_run.py`、生成 `dispatch.json`，最后逐项执行并用 `record_result.py` 登记结果。完整命令见 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)。
+之后依次补全 `plan.json`、确认 `prompts.md`、用 `approve_run.py` 记录获批模型和输出参数、生成 `dispatch.json`，最后逐项执行并用 `record_result.py` 登记生成与四项 QA 结果。提示词、参数、约束或本地素材内容变化后，派发会要求重新批准。完整命令见 [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md)。
+
+优先级、后续阶段与验收条件见[可靠生产工作流改造计划](docs/prd-reliability-roadmap.zh-CN.md)。
 
 ### 可局部修改的视频分镜
 
@@ -154,4 +176,5 @@ python -m unittest discover -s tests -v
 - [工作坊 Skill](skills/miaodashi-workshop/SKILL.md) · [质量门禁](skills/miaodashi-workshop/references/quality-gates.md)
 - [社区作品展示](examples/README.md) · [贡献指南](CONTRIBUTING.md)
 - [GEO 与搜索收录说明](docs/discoverability.md)
+- [面向 AI Agent 的产品事实与路由指南](docs/agent-guide.md)
 - [GitHub Pages 展示页](https://miyakooy.github.io/TensorsLab-Vison/)

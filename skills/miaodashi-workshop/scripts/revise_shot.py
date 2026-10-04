@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from workflow_state import write_json_atomic
+
 
 def read_json(path: Path) -> dict[str, Any]:
     try:
@@ -22,7 +24,7 @@ def read_json(path: Path) -> dict[str, Any]:
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_json_atomic(path, value)
 
 
 def parse_args() -> argparse.Namespace:
@@ -68,17 +70,23 @@ def main() -> int:
         task["outputs"] = []
     if args.prompt is not None:
         task["prompt"] = args.prompt
-    task["status"] = "planned"
+    task["status"] = "needs_approval"
+    task["qa_status"] = "pending"
+    task["delivery_status"] = "blocked"
+    approval = plan.setdefault("execution", {}).get("approval", {})
+    approval.get("task_digests", {}).pop(args.task, None)
     record = manifest.setdefault("task_status", {}).setdefault(args.task, {"attempts": []})
-    record["status"] = "planned"
+    record["status"] = "needs_approval"
+    record["approval_status"] = "needs_approval"
+    record.pop("approval_digest", None)
     record.setdefault("revisions", []).append({"at": now, "reason": args.reason, "replaced_approved_output": bool(previous_outputs)})
     record.setdefault("attempts", []).append({"at": now, "status": "reopened", "note": args.reason, "outputs": []})
-    plan["status"] = "in_progress"
-    manifest["status"] = "in_progress"
+    plan["status"] = "needs_approval"
+    manifest["status"] = "needs_approval"
     write_json(run_dir / "plan.json", plan)
     write_json(run_dir / "manifest.json", manifest)
     print(f"Reopened shot for a new attempt: {args.task}")
-    print("Next: prepare_dispatch.py for this task, run the existing tl-video client, then record_result.py.")
+    print("Next: explicitly approve this revised task, then prepare its dispatch command.")
     return 0
 
 

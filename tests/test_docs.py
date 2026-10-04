@@ -19,6 +19,7 @@ READMES = [
     ROOT / "examples/README.ja.md",
     ROOT / "examples/README.ko.md",
     ROOT / "docs/README.md",
+    ROOT / "docs/agent-guide.md",
 ]
 
 PAGE_URLS = {
@@ -26,6 +27,11 @@ PAGE_URLS = {
     ROOT / "docs/en/index.html": "https://miyakooy.github.io/TensorsLab-Vison/en/",
     ROOT / "docs/ja/index.html": "https://miyakooy.github.io/TensorsLab-Vison/ja/",
     ROOT / "docs/ko/index.html": "https://miyakooy.github.io/TensorsLab-Vison/ko/",
+}
+
+DISCOVERY_URLS = {
+    "https://miyakooy.github.io/TensorsLab-Vison/agent-guide.md",
+    "https://miyakooy.github.io/TensorsLab-Vison/llms.txt",
 }
 
 HREFLANGS = {
@@ -84,7 +90,7 @@ class DocumentationTests(unittest.TestCase):
     def test_sitemap_is_valid_xml(self) -> None:
         root = ET.parse(ROOT / "docs/sitemap.xml").getroot()
         locations = [item.text for item in root.findall("{*}url/{*}loc")]
-        self.assertEqual(set(locations), set(PAGE_URLS.values()))
+        self.assertEqual(set(locations), set(PAGE_URLS.values()) | DISCOVERY_URLS)
 
     def test_showcase_assets_are_local_and_indexable(self) -> None:
         assets = [
@@ -113,17 +119,42 @@ class DocumentationTests(unittest.TestCase):
                 )
 
     def test_json_ld_is_valid(self) -> None:
-        html = (ROOT / "docs/index.html").read_text(encoding="utf-8")
-        match = re.search(
-            r'<script type="application/ld\+json">\s*(.*?)\s*</script>',
-            html,
-            flags=re.DOTALL,
-        )
-        self.assertIsNotNone(match)
-        payload = json.loads(match.group(1))
-        self.assertEqual(payload["@type"], "SoftwareSourceCode")
-        self.assertEqual(payload["codeRepository"], "https://github.com/miyakooy/TensorsLab-Vison")
-        self.assertIn("image to video", payload["keywords"])
+        for page in PAGE_URLS:
+            html = page.read_text(encoding="utf-8")
+            match = re.search(
+                r'<script type="application/ld\+json">\s*(.*?)\s*</script>',
+                html,
+                flags=re.DOTALL,
+            )
+            self.assertIsNotNone(match, page)
+            payload = json.loads(match.group(1))
+            self.assertEqual(payload["@type"], "SoftwareSourceCode", page)
+            self.assertEqual(
+                payload["codeRepository"],
+                "https://github.com/miyakooy/TensorsLab-Vison",
+                page,
+            )
+            self.assertGreaterEqual(len(payload["featureList"]), 6, page)
+
+    def test_agent_positioning_is_consistent_across_locales(self) -> None:
+        headings = {
+            "README.md": "What is TensorsLab Vision?",
+            "README.zh-CN.md": "TensorsLab Vision 是什么？",
+            "README.ja.md": "TensorsLab Vision とは？",
+            "README.ko.md": "TensorsLab Vision이란?",
+        }
+        for name, heading in headings.items():
+            content = (ROOT / name).read_text(encoding="utf-8")
+            self.assertIn(heading, content, name)
+            self.assertIn("docs/agent-guide.md", content, name)
+            for skill in ("tl-image", "tl-video", "miaodashi-workshop"):
+                self.assertIn(skill, content, name)
+
+        guide = (ROOT / "docs/agent-guide.md").read_text(encoding="utf-8")
+        llms = (ROOT / "docs/llms.txt").read_text(encoding="utf-8")
+        for phrase in ("persistent task recovery", "content-bound approval", "QA-gated"):
+            self.assertIn(phrase.lower(), guide.lower())
+            self.assertIn(phrase.lower(), llms.lower())
 
     def test_showcase_keeps_capability_boundaries_visible(self) -> None:
         html = (ROOT / "docs/index.html").read_text(encoding="utf-8")

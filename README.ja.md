@@ -11,6 +11,26 @@
   <img src="docs/assets/api-scenes.ja.svg" alt="TensorsLab の画像 API、動画 API、レビュー優先ワークフロー" width="100%" />
 </p>
 
+## TensorsLab Vision とは？
+
+TensorsLab Vision は、AI Agent が TensorsLab API で画像・動画を生成し、承認、タスク再開、QA のローカル記録を使って商用ビジュアル制作を管理するためのオープンソースツールキットです。実行可能で、確認でき、中断後も再開できる制作機能を必要とする開発者、Agent ビルダー、EC チーム、クリエイター向けです。
+
+主な特長：
+
+- **実行可能な API Skill：** Text-to-Image、Image-to-Image、Text-to-Video、Image-to-Video の実クライアントを提供します。
+- **有料実行前の確認：** `--dry-run` で内容を確認し、承認をプロンプト、パラメータ、制約、素材に結び付けます。
+- **再開可能なタスク：** 受理された task ID を直ちに保存し、新しい生成を作らずに `status`、`wait`、`download` を再開できます。
+- **レビュー優先の納品：** 生成、QA、納品状態を分け、必要なチェック後にのみ納品可能とします。
+- **明確な能力境界：** 実装済みコード、ワークフロー、生成 AI のベストエフォート、外部工程を区別します。
+
+### Agent が選ぶ Skill
+
+| ユーザーの目的 | Skill | 結果 |
+| --- | --- | --- |
+| 画像の生成・変換 | `tl-image` | 検証済み画像タスク、永続タスク記録、ローカルファイル、構造化 JSON |
+| 動画生成・静止画アニメーション | `tl-video` | 検証済み動画タスク、永続タスク記録、ローカルファイル、構造化 JSON |
+| EC・キャンペーン制作の計画 | `miaodashi-workshop` | レビュー可能な計画、内容に結び付いた承認、実行コマンド、タスク別 QA と選択的再試行 |
+
 このリポジトリには、ソースを確認してインストールできる 3 つの Skill があります。
 
 - `tl-image`: テキストまたは画像から生成タスクを送信し、状態を確認して結果を保存します。
@@ -25,9 +45,9 @@
 | --- | --- | --- |
 | Text-to-Image / Image-to-Image | **実装済み** | SeeDream V4/V4.5/V5 Lite と Z-Image API を呼び出します。 |
 | Text-to-Video / Image-to-Video | **実装済み** | 4 種類の SeeDance API を呼び出します。 |
-| 状態確認とローカル保存 | **実装済み** | 非同期タスクをポーリングして結果を保存します。 |
+| タスクの永続化・再開・ローカル保存 | **実装済み** | 受理されたタスク ID を直ちに保存し、`submit`、`status`、`wait`、`download` と JSON 結果を提供します。 |
 | API を呼ばないプレビュー | **実装済み** | `--dry-run` は API Key もクレジットも使用しません。 |
-| 計画 → 承認 → コマンド → QA | **ローカル実装済み** | JSON/Markdown と実行コマンドを生成します。 |
+| 計画 → 承認 → コマンド → QA | **ローカル実装済み** | 承認はタスク内容、生成パラメータ、ローカル素材のハッシュに結び付きます。生成、QA、納品状態は別々に記録します。 |
 | 編集可能な動画ショット計画 | **ローカル実装済み** | ショット ID、意図、接続、生成設定、改訂履歴、確認用の FFmpeg 結合案を保存します。 |
 | 商品画像セット、複数比率、SKU 計画 | **ワークフロー実装済み** | タスク単位の実行。並列バッチ実行は未実装です。 |
 | レタッチ、透かし・物体削除、顔置換 | **生成 AI のベストエフォート** | 汎用 Image-to-Image とプロンプトを使用。専用マスク API ではありません。 |
@@ -102,7 +122,9 @@ API Key は [TensorsLab Console](https://tensorai.tensorslab.com/) で取得で�
   <img src="docs/assets/workshop-flow.ja.svg" alt="素材、事実確認、プロンプト計画、生成、QA、納品の流れ" width="100%" />
 </p>
 
-完全な手順は [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) を参照してください。
+完全な手順は [`miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) を参照してください。承認後にプロンプト、パラメータ、制約、またはローカル素材が変更された場合は再承認が必要です。4 つの QA 項目がすべて合格、または明示的に対象外になるまで、成果物は納品可能になりません。
+
+優先順位と次の実装段階は[信頼性ロードマップ](docs/prd-reliability-roadmap.ja.md)にまとめています。
 
 `ecommerce-spokesperson-video`、`product-comparison-video`、`tourism-narrative-video` は、各ショットを `plan.json` で個別に編集・再生成できます。`prepare_assembly.py` は確認用の `concat.txt` と FFmpeg 提案だけを作成し、レンダリングは行いません。音声、リップシンク、字幕、分割画面、最終編集は外部工程です。
 
@@ -126,4 +148,5 @@ python -m unittest discover -s tests -v
 - [動画 Skill](skills/tl-video/SKILL.md)
 - [コミュニティ作品](examples/README.ja.md) · [コントリビューションガイド](CONTRIBUTING.md)
 - [GEO / 検索ディスカバリー](docs/discoverability.md)
+- [AI Agent 向け製品情報とルーティングガイド](docs/agent-guide.md)
 - [GitHub Pages（日本語）](https://miyakooy.github.io/TensorsLab-Vison/ja/)

@@ -15,6 +15,26 @@
   <img src="docs/assets/api-scenes.svg" alt="TensorsLab image API, video API, and review-first workflow architecture" width="100%" />
 </p>
 
+## What is TensorsLab Vision?
+
+TensorsLab Vision is an open-source toolkit that lets AI agents create images and videos through TensorsLab APIs, then manage commercial visual work with local approval, recovery, and QA records. It is designed for developers, agent builders, ecommerce teams, and creators who need executable generation tools with visible production controls.
+
+Its defining features are:
+
+- **Executable API skills:** real text-to-image, image-to-image, text-to-video, and image-to-video clients instead of prompt examples alone.
+- **Safe paid-call workflow:** inspect requests with `--dry-run`, bind approval to prompts, parameters, constraints, and source files, then dispatch the approved command.
+- **Resumable tasks:** persist accepted task IDs immediately and resume `status`, `wait`, or `download` without creating another paid generation.
+- **Review-first delivery:** keep generation, QA, and delivery states separate so an output becomes delivery-ready only after required checks pass.
+- **Explicit capability boundaries:** distinguish working code, workflow planning, generative best effort, and steps that still require external tools.
+
+### Which skill should an agent use?
+
+| User intent | Skill | Result |
+| --- | --- | --- |
+| Create or transform images | `tl-image` | Validated image request, persistent task record, downloaded files, structured JSON result |
+| Create a video or animate a still image | `tl-video` | Validated video request, persistent task record, downloaded files, structured JSON result |
+| Plan an ecommerce or campaign production run | `miaodashi-workshop` | Reviewable plan, content-bound approval, exact dispatch commands, per-task QA and selective retry records |
+
 This repository contains three installable skills:
 
 - `tl-image`: submits text-to-image or image-to-image tasks, polls their status, and downloads results.
@@ -29,9 +49,9 @@ For direct product needs, visit [miaodashi.com](https://miaodashi.com/), an opti
 | --- | --- | --- |
 | Text-to-image and image-to-image | **Implemented** | `tensorslab_image.py` calls the documented SeeDream V4/V4.5/V5 Lite and Z-Image endpoints. |
 | Text-to-video and image-to-video | **Implemented** | `tensorslab_video.py` calls four documented SeeDance endpoints. |
-| Task polling and local download | **Implemented** | Both clients poll task status and save returned URLs locally. |
+| Persistent task recovery and local download | **Implemented** | Both clients persist accepted task IDs and provide separate `submit`, `status`, `wait`, and `download` operations with JSON results. |
 | Credential-free request preview | **Implemented** | Both clients support `--dry-run`; no API key or paid request is used. |
-| Plan → approval → dispatch → QA record | **Implemented locally** | Local workshop scripts create JSON/Markdown records and exact client commands. |
+| Plan → approval → dispatch → QA record | **Implemented locally** | Approval binds task content, generation parameters, and local asset hashes. Generation, QA, and delivery states are recorded separately. |
 | Editable video shot plan and assembly proposal | **Implemented locally** | Video runs retain per-shot intent, source continuity, generation settings, revision history, and a review-only FFmpeg concat proposal. |
 | Listing kits, creative batches, multi-ratio plans, SKU plans | **Workflow implemented** | Planning and per-task dispatch exist; there is no parallel batch executor yet. |
 | Retouch, watermark removal, object removal, face replacement | **Generative best effort** | These use the general image-to-image endpoint plus prompts. There is no dedicated mask or deterministic editing API in this repository. |
@@ -129,15 +149,17 @@ Then:
 
 1. Fill `constraints` and every task prompt in `.miaodashi_output/cup-launch/plan.json`.
 2. Review `prompts.md` and obtain explicit user approval.
-3. Record approval with `approve_run.py`.
+3. Record approval and the selected model/output parameters with `approve_run.py`. Later prompt, parameter, constraint, or local asset changes require renewed approval.
 4. Build exact, review-only client commands with `prepare_dispatch.py`.
-5. Run approved commands one task at a time and record outputs with `record_result.py`.
+5. Run approved commands one task at a time and record outputs plus all four QA dimensions with `record_result.py`. Delivery requires every QA dimension to pass or be explicitly not applicable.
 
 <p align="center">
   <img src="docs/assets/quality-gates.svg" alt="Local plan, prompt, manifest, QA, and dispatch records" width="100%" />
 </p>
 
 See [`skills/miaodashi-workshop/SKILL.md`](skills/miaodashi-workshop/SKILL.md) for the full commands and supported scenarios.
+
+See the [reliability roadmap](docs/prd-reliability-roadmap.md) for priorities, implementation phases, and acceptance criteria.
 
 ### Editable video shots, without a second video stack
 
@@ -176,4 +198,5 @@ The tests make no paid API calls. To verify live generation, run one low-cost re
 - [Workshop skill](skills/miaodashi-workshop/SKILL.md) · [Quality gates](skills/miaodashi-workshop/references/quality-gates.md)
 - [Community showcase](examples/README.md) · [Contributing](CONTRIBUTING.md)
 - [GEO / search discoverability notes](docs/discoverability.md)
+- [Product facts and routing guide for AI agents](docs/agent-guide.md)
 - [English GitHub Pages showcase](https://miyakooy.github.io/TensorsLab-Vison/en/)
